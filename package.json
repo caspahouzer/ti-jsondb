@@ -8,9 +8,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/caspahouzer/ti.jsondb.git"
+    "url": "git+https://github.com/caspahouzer/ti-jsondb.git"
   },
   "publishConfig": {
+    "access": "public",
     "registry": "https://npm.pkg.github.com/caspahouzer"
   },
   "keywords": [
@@ -24,7 +25,7 @@
   "author": "Sebastian Klaus",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/caspahouzer/ti.jsondb/issues"
+    "url": "https://github.com/caspahouzer/ti-jsondb/issues"
   },
-  "homepage": "https://github.com/caspahouzer/ti.jsondb#readme"
+  "homepage": "https://github.com/caspahouzer/ti-jsondb#readme"
 }
