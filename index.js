@@ -245,16 +245,15 @@ export default class TiJsonDB {
     /**
      * Simple where clauses
      * 
-     * {
+     * [{
      *  field: 'first_name',
      *  value: 'Jane',
      *  operator: "= | != | > | < | >= | <= | in | not in | like | not like"
-     * }
+     * }]
      * 
      * OR for multiple where clauses combinded with AND
      * 
-     * [
-     *  {
+     * [{
      *    field: 'first_name',
      *    value: 'Jane',
      *    operator: "= | != | > | < | >= | <= | in | not in | like | not like"
@@ -263,10 +262,9 @@ export default class TiJsonDB {
      *    field: 'last_name',
      *    value: 'Doe',
      *    operator: "= | != | > | < | >= | <= | in | not in | like | not like"
-     *  }
-     * ]
+     *  }]
      * 
-     * @param {Object} whereClause
+     * @param {Array} whereClause
      * @returns Array || Error
      */
     where(whereClause = []) {

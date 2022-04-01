@@ -3,7 +3,7 @@
 <a name="module_TiJsonDB"></a>
 
 ## TiJsonDB
-Database functions
+Database functions overview
 
 
 * [TiJsonDB](#module_TiJsonDB)
@@ -101,16 +101,15 @@ Returns the first found element
 #### table.where(whereClause) ⇒
 Simple where clauses
 
-{
+[{
  field: 'first_name',
  value: 'Jane',
  operator: "= | != | > | < | >= | <= | in | not in | like | not like"
-}
+}]
 
 OR for multiple where clauses combinded with AND
 
-[
- {
+[{
    field: 'first_name',
    value: 'Jane',
    operator: "= | != | > | < | >= | <= | in | not in | like | not like"
@@ -119,15 +118,14 @@ OR for multiple where clauses combinded with AND
    field: 'last_name',
    value: 'Doe',
    operator: "= | != | > | < | >= | <= | in | not in | like | not like"
- }
-]
+ }]
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
 **Returns**: Array || Error  
 
 | Param | Type |
 | --- | --- |
-| whereClause | <code>Object</code> | 
+| whereClause | <code>Array</code> | 
 
 <a name="module_TiJsonDB--table+orderBy"></a>
 

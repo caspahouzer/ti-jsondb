@@ -20,13 +20,11 @@ const jsonDatabase = new TiJsonDB({
 ### Working with the database
 
 #### Create / Init table
-
 ```javascript
 jsonDatabase.table('user');
 ```
 
 #### Create example settings table with object content
-
 ```javascript
 jsonDatabase.table('settings', { setting1: true, setting2: false, setting3: 'test' });
 let settings = jsonDatabase.table('settings').fetch();
@@ -34,7 +32,6 @@ console.warn('settings', settings);
 ```
 
 #### Update object
-
 ```javascript
 jsonDatabase.table('settings').push({ setting1: false, setting2: true });
 settings = jsonDatabase.table('settings').fetch();
@@ -42,7 +39,6 @@ console.warn('settings after update', settings);
 ```
 
 #### Push data into table
-
 ```javascript
 jsonDatabase.table('user').push({
     id: '38414679-1a10-42fe-be65-8e6b0b37b234', // remove this line to make a new entry
@@ -54,14 +50,12 @@ jsonDatabase.table('user').push({
 ```
 
 #### Delete table completely
-
 ```javascript
 jsonDatabase.table('test');
 jsonDatabase.table('test').destroy();
 ```
 
 #### Push item for delete action
-
 ```javascript
 jsonDatabase.table('user').push({
     id: 'b8b79689-39a5-4885-80d8-9b8822e061c5',
@@ -73,7 +67,6 @@ jsonDatabase.table('user').push({
 ```
 
 #### Fetch table
-
 ```javascript
 jsonDatabase
     .table('user')
@@ -85,19 +78,16 @@ jsonDatabase
 ```
 
 #### Delete item by id
-
 ```javascript
 jsonDatabase.table('user').delete('b8b79689-39a5-4885-80d8-9b8822e061c5');
 ```
 
 #### Delete multiple items
-
 ```javascript
 jsonDatabase.table('user').delete(['b8b79689-39a5-4885-80d8-9b8822e061c5', 'd6c52967-9654-4152-80f8-8fbc5a1e33d6']);
 ```
 
 #### fetch data with callback functions
-
 ```javascript
 jsonDatabase
     .table('user')
@@ -116,6 +106,7 @@ jsonDatabase
     );
 ```
 
+#### Fetch a single item by id
 ```javascript
 jsonDatabase.table('user').fetchById(
     '38414679-1a10-42fe-be65-8e6b0b37b234',
@@ -125,6 +116,7 @@ jsonDatabase.table('user').fetchById(
 );
 ```
 
+#### Fetch single item by field
 ```javascript
 jsonDatabase.table('user').fetchSingle(
     'first_name',
@@ -134,7 +126,7 @@ jsonDatabase.table('user').fetchSingle(
     })
 );
 ```
-
+#### Simple where clause
 ```javascript
 jsonDatabase
     .table('user')
@@ -152,6 +144,7 @@ jsonDatabase
     );
 ```
 
+#### Simple where clause with limit
 ```javascript
 jsonDatabase
     .table('user')
@@ -169,3 +162,4 @@ jsonDatabase
         })
     );
 ```
+Get an [overview](./database.md) to all functions and parameters
