@@ -163,6 +163,8 @@ jsonDatabase
         })
     );
 ```
-Get an [overview](./database.md) to all functions and parameters
+Get an [overview](./methods.md) to all functions and parameters
+
+* * *
 
 &copy; 2022 Sebastian Klaus
