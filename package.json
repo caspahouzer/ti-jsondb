@@ -1,5 +1,5 @@
 {
-  "name": "ti.jsondb",
+  "name": "ti-jsondb",
   "version": "1.0.0",
   "description": "A file based JSON database for TiDev Titanium",
   "main": "index.js",
