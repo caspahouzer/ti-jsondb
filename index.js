@@ -1,5 +1,7 @@
-
-
+/**
+ * Copyright (c) 2022, Sebastian Klaus
+ * See the LICENSE file for more information.
+ */
 export default class TiJsonDB {
 
     /**
