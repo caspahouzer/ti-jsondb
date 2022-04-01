@@ -28,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/caspahouzer/ti-jsondb/issues"
   },
-  "homepage": "https://github.com/caspahouzer/ti-jsondb#readme"
+  "homepage": "https://github.com/caspahouzer/ti-jsondb#readme",
+  "devDependencies": {
+    "jsdoc-to-markdown": "^7.1.1"
+  }
 }

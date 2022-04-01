@@ -1,12 +1,14 @@
 /**
- * Copyright (c) 2022, Sebastian Klaus
- * See the LICENSE file for more information.
+ * Database functions overview
+ * 
+ * @module TiJsonDB
  */
 export default class TiJsonDB {
 
     /**
      * Creates path for table files
      * 
+     * @alias module:constructor
      * @returns TiJsonDB
      */
     constructor(options = {}) {
@@ -20,7 +22,7 @@ export default class TiJsonDB {
         this.allTables = {};
         if (!this.dbFolderObject.exists()) {
             if (!this.dbFolderObject.createDirectory(true)) {
-                throw new Error('ti.jsondb - Could not create directory for ti.jsondb');
+                throw new Error('ti-jsondb - Could not create directory tijsondb');
             }
         }
 
@@ -31,9 +33,10 @@ export default class TiJsonDB {
     /**
      * Set actual table to fetch from
      * 
+     * @alias module:TiJsonDB
      * @param {*} tableName 
      * @param {*} tableData optional 
-     * @returns 
+     * @returns TiJsonDB
      */
     table(tableName, tableData) {
         this.entries = null;
@@ -41,7 +44,7 @@ export default class TiJsonDB {
         const dbFile = Ti.Filesystem.getFile(this.dbPath, this._cleanString(this.dbTable) + '.json');
         if (!dbFile.exists()) {
             if (this.debug) {
-                console.log('DEBUG ti.jsondb - Table "' + this.dbTable + '" does not exist and will be created');
+                console.log('DEBUG ti-jsondb - Table "' + this.dbTable + '" does not exist and will be created');
             }
             dbFile.createFile();
             dbFile.write(JSON.stringify([]));
@@ -63,10 +66,10 @@ export default class TiJsonDB {
      */
     push(tableData) {
         if (this.debug) {
-            console.log('DEBUG ti.jsondb - Push ', tableData);
+            console.log('DEBUG ti-jsondb - Push ', tableData);
         }
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - Push: No table selected');
+            throw new Error('ti-jsondb - Push: No table selected');
         }
 
         if (this.allTables[this.dbTable]) {
@@ -96,7 +99,7 @@ export default class TiJsonDB {
                     if (this._persist()) {
                         return tableData;
                     }
-                    throw new Error('ti.jsondb - Push: Could not write object to table "' + this.dbTable + '"');
+                    throw new Error('ti-jsondb - Push: Could not write object to table "' + this.dbTable + '"');
                 }
 
                 // Add array of objects
@@ -126,7 +129,7 @@ export default class TiJsonDB {
                     if (this._persist()) {
                         return tableData;
                     }
-                    throw new Error('ti.jsondb - Push: Could not write objects to table "' + this.dbTable + '"');
+                    throw new Error('ti-jsondb - Push: Could not write objects to table "' + this.dbTable + '"');
                 }
             }
 
@@ -139,7 +142,7 @@ export default class TiJsonDB {
                 }
             }
         }
-        throw new Error('ti.jsondb - Push: Table "' + this.dbTable + '" does not exist');
+        throw new Error('ti-jsondb - Push: Table "' + this.dbTable + '" does not exist');
     }
 
     /**
@@ -152,12 +155,12 @@ export default class TiJsonDB {
     fetch(onSuccess = null, onError = null) {
 
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - Fetch: No table selected');
+            throw new Error('ti-jsondb - Fetch: No table selected');
         }
 
         if (this.debug) {
             const endTime = new Date().getTime() - this.startTime;
-            console.log('DEBUG ti.jsondb - Fetch after ' + endTime + 'ms');
+            console.log('DEBUG ti-jsondb - Fetch after ' + endTime + 'ms');
         }
 
         if (this.entries) {
@@ -184,14 +187,14 @@ export default class TiJsonDB {
             return;
         }
 
-        throw new Error('ti.jsondb - Push: Table "' + this.dbTable + '" does not exist');
+        throw new Error('ti-jsondb - Push: Table "' + this.dbTable + '" does not exist');
     }
 
     /**
      * Fetch single entry by id
      * 
      * @param {string} id 
-     * @returns 
+     * @returns Object || Error
      */
     fetchById(id, onSuccess = null, onError = null) {
         return this.fetchSingle('id', id, onSuccess = null, onError = null);
@@ -202,10 +205,11 @@ export default class TiJsonDB {
      * 
      * @param {string} field 
      * @param {mixed} value 
+     * @returns Object || Error
      */
     fetchSingle(field, value, onSuccess = null, onError = null) {
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - Where: No table selected');
+            throw new Error('ti-jsondb - : No table selected');
         }
 
         // if entries not set, fetch them
@@ -233,7 +237,7 @@ export default class TiJsonDB {
         }
 
         if (this.debug) {
-            console.log('DEBUG ti.jsondb - Fetch single from "' + field + '" by "' + value + '": ', entry);
+            console.log('DEBUG ti-jsondb - Fetch single from "' + field + '" by "' + value + '": ', entry);
         }
 
     }
@@ -242,20 +246,37 @@ export default class TiJsonDB {
      * Simple where clauses
      * 
      * {
-     * field: 'first_name',
-     * value: 'Jane,
-     * operator: = | != | > | < | >= | <= | in | not in | like | not like
+     *  field: 'first_name',
+     *  value: 'Jane',
+     *  operator: "= | != | > | < | >= | <= | in | not in | like | not like"
      * }
-     * @param {Object} whereArray 
+     * 
+     * OR for multiple where clauses combinded with AND
+     * 
+     * [
+     *  {
+     *    field: 'first_name',
+     *    value: 'Jane',
+     *    operator: "= | != | > | < | >= | <= | in | not in | like | not like"
+     *  },
+     *  {
+     *    field: 'last_name',
+     *    value: 'Doe',
+     *    operator: "= | != | > | < | >= | <= | in | not in | like | not like"
+     *  }
+     * ]
+     * 
+     * @param {Object} whereClause
+     * @returns Array || Error
      */
-    where(whereArray = []) {
+    where(whereClause = []) {
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - Where: No table selected');
+            throw new Error('ti-jsondb - Where: No table selected');
         }
 
         if (this.allTables[this.dbTable]) {
             if (this.entries) {
-                _.each(whereArray, (where) => {
+                _.each(whereClause, (where) => {
                     let field = where.field;
                     let value = where.value;
                     let operator = where.operator || '=';
@@ -292,7 +313,7 @@ export default class TiJsonDB {
                                 return entry[field].indexOf(value) === -1;
                                 break;
                             default:
-                                throw new Error('ti.jsondb - Where: Operator "' + operator + '" not supported');
+                                throw new Error('ti-jsondb - Where: Operator "' + operator + '" not supported');
                         }
                     });
                 });
@@ -306,13 +327,14 @@ export default class TiJsonDB {
      * 
      * @param {*} key 
      * @param {*} order  'asc' || 'desc' || 'rand'  
+     * @returns Array || Error
      */
     orderBy(key, order = 'asc') {
         if (this.debug) {
-            console.log('DEBUG ti.jsondb - Order by: ', key, order);
+            console.log('DEBUG ti-jsondb - Order by: ', key, order);
         }
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - Sort: No table selected');
+            throw new Error('ti-jsondb - Sort: No table selected');
         }
 
         if (!this.entries) {
@@ -337,7 +359,7 @@ export default class TiJsonDB {
             return this;
         }
 
-        throw new Error('ti.jsondb - Sort: Table of objects "' + this.tableName + '" cannot be sorted');
+        throw new Error('ti-jsondb - Sort: Table of objects "' + this.tableName + '" cannot be sorted');
     }
 
     /**
@@ -345,15 +367,15 @@ export default class TiJsonDB {
      * 
      * @param {number} limit 
      * @param {number} offset 
-     * @returns 
+     * @returns Array || Error
      */
     limit(limit = null, offset = 0) {
         if (this.debug) {
-            console.log('DEBUG ti.jsondb - Limit: ', limit, offset);
+            console.log('DEBUG ti-jsondb - Limit: ', limit, offset);
         }
 
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - Sort: No table selected');
+            throw new Error('ti-jsondb - Sort: No table selected');
         }
 
         if (!this.entries) {
@@ -370,24 +392,24 @@ export default class TiJsonDB {
     /**
      * Delete item by id
      * 
-     * @param {String || Array} id
+     * @param {mixed} String || Array id
      * @param {*} onSuccess
      * @param {*} onError
      * @returns {boolean} || function
      */
     delete(id, onSuccess = null, onError = null) {
         if (!id) {
-            throw new Error('ti.jsondb - Delete: No id given');
+            throw new Error('ti-jsondb - Delete: No id given');
         }
 
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - Delete: No table selected');
+            throw new Error('ti-jsondb - Delete: No table selected');
         }
 
         if (this.entries) {
             let deletedEntries = this.entries.length;
             if (this.debug) {
-                console.log('DEBUG ti.jsondb - Delete ', id);
+                console.log('DEBUG ti-jsondb - Delete ', id);
             }
 
             this.entries = _.filter(this.entries, (n) => {
@@ -400,7 +422,7 @@ export default class TiJsonDB {
 
             if (this.debug) {
                 deletedEntries -= this.entries.length;
-                console.log('DEBUG ti.jsondb - Deleted ' + deletedEntries + ' item(s) of ', this.entries.length);
+                console.log('DEBUG ti-jsondb - Deleted ' + deletedEntries + ' item(s) of ', this.entries.length);
             }
 
             this._persist();
@@ -432,10 +454,14 @@ export default class TiJsonDB {
      * !! Warning !! 
      * 
      * This function REALLY deletes the whole table
+     * 
+     * @param {*} onSuccess
+     * @param {*} onError
+     * @returns {boolean} || function
      */
     destroy(onSuccess = null, onError = null) {
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - Destroy: No table selected');
+            throw new Error('ti-jsondb - Destroy: No table selected');
         }
 
         if (this.allTables[this.dbTable]) {
@@ -466,7 +492,7 @@ export default class TiJsonDB {
      */
     lastItem(onSuccess = null, onError = null) {
         if (!this.dbTable) {
-            throw new Error('ti.jsondb - LastItem: No table selected');
+            throw new Error('ti-jsondb - LastItem: No table selected');
         }
 
         if (this.entries) {
@@ -489,7 +515,22 @@ export default class TiJsonDB {
     }
 
     /**
+     * Return last item id
+     * 
+     * @returns {string}
+     */
+    get last_insert_id() {
+        const lastItem = this.lastItem();
+        if(lastItem) {
+            return lastItem.id;
+        }
+        return null;
+    }
+
+    /**
      * Reload all existing tables to table -> file mapping
+     * 
+     * @returns {boolean}
      */
     get reloadAllTables() {
         let allTables = this.dbFolderObject.getDirectoryListing();
@@ -501,6 +542,7 @@ export default class TiJsonDB {
         _.each(allTables, (table) => {
             this.allTables[table] = Ti.Filesystem.getFile(this.dbPath, table + '.json');
         });
+        return true;
     }
 
     /**
@@ -510,6 +552,7 @@ export default class TiJsonDB {
     /**
      * Persist data to file
      * 
+     * @private
      * @returns {boolean}
      */
     _persist() {
@@ -522,6 +565,7 @@ export default class TiJsonDB {
     /**
      * Generate a unique id
      * 
+     * @private
      * @returns GUID
      */
     _generateId() {
@@ -534,8 +578,9 @@ export default class TiJsonDB {
     /**
      * Clean string from special chars
      * 
+     * @private
      * @param {*} value 
-     * @returns 
+     * @returns {string}
      */
     _cleanString(value) {
         if (value === undefined) {
