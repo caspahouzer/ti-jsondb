@@ -1,5 +1,5 @@
 {
-  "name": "ti-jsondb",
+  "name": "@caspahouzer/ti-jsondb",
   "version": "1.0.0",
   "description": "A file based JSON database for TiDev Titanium",
   "main": "index.js",
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/caspahouzer/ti-jsondb.git"
   },
   "publishConfig": {
-    "access": "public",
+    "name": "@caspahouzer/ti-jsondb",
     "registry": "https://npm.pkg.github.com/caspahouzer"
   },
   "keywords": [

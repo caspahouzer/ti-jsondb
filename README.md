@@ -4,7 +4,7 @@
 
 ### Install
 
-Follow these [guidelines](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/CommonJS_Modules_in_Titanium.html#node-js-support) to know how Titanium handles to work with node modules
+Follow these [guidelines](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Guide/Best_Practices_and_Recommendations/CommonJS_Modules_in_Titanium.html#commonjs-module-specification-implementation) to know how Titanium handles to work with node modules
 
     npm install ti-jsondb
 
