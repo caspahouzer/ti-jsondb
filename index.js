@@ -158,11 +158,6 @@ export default class TiJsonDB {
             throw new Error('ti-jsondb - Fetch: No table selected');
         }
 
-        if (this.debug) {
-            const endTime = new Date().getTime() - this.startTime;
-            console.log('DEBUG ti-jsondb - Fetch after ' + endTime + 'ms');
-        }
-
         if (this.entries) {
             if (onSuccess instanceof Function) {
                 onSuccess(this.entries);
@@ -170,6 +165,11 @@ export default class TiJsonDB {
             }
 
             return this.entries;
+        }
+
+        if (this.debug) {
+            const endTime = new Date().getTime() - this.startTime;
+            console.log('DEBUG ti-jsondb - Fetch after ' + endTime + 'ms');
         }
 
         if (this.allTables[this.dbTable]) {

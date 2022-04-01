@@ -156,6 +156,7 @@ jsonDatabase
         },
     ])
     .limit(10)
+    .orderBy('first_name', 'desc')
     .fetch(
         (success = (data) => {
             console.warn('onSuccess', data);
