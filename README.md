@@ -164,3 +164,5 @@ jsonDatabase
     );
 ```
 Get an [overview](./database.md) to all functions and parameters
+
+&copy; 2022 Sebastian Klaus
