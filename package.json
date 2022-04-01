@@ -10,14 +10,17 @@
     "type": "git",
     "url": "git+https://github.com/caspahouzer/ti.jsondb.git"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/caspahouzer"
+  },
   "keywords": [
-		"appcelerator",
-		"titanium",
-		"titanium-mobile",
-		"json",
-		"database",
-		"helper"
-	],
+    "appcelerator",
+    "titanium",
+    "titanium-mobile",
+    "json",
+    "database",
+    "helper"
+  ],
   "author": "Sebastian Klaus",
   "license": "MIT",
   "bugs": {

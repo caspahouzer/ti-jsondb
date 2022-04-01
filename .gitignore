@@ -1,0 +1,9 @@
+.DS_Store
+/testing-scripts
+# Dependency directories
+node_modules/
+
+.history
+.npmrc
+
+# Core components
