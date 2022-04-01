@@ -11,7 +11,8 @@
     "url": "git+https://github.com/caspahouzer/ti-jsondb.git"
   },
   "publishConfig": {
-    "name": "@caspahouzer/ti-jsondb",
+    "access": "public",
+    "name": "ti-jsondb",
     "registry": "https://npm.pkg.github.com/caspahouzer"
   },
   "keywords": [
