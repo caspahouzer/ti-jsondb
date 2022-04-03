@@ -6,6 +6,3 @@ node_modules/
 .history
 .npmrc
 
-.commonjs/ti-jsondb.js
-
-# Core components

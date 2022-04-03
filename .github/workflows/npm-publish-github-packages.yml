@@ -20,9 +20,6 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@caspahouzer'
       - run: npm ci
-      - run: npm install jsdoc-to-markdown
-      - run: npm run docs
-      - run: npm run commonjs
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
