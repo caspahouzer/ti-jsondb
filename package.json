@@ -1,11 +1,12 @@
 {
   "name": "@caspahouzer/ti-jsondb",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A file based JSON database for TiDev Titanium",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "jsdoc2md --template database.hbs index.js > database.md"
+    "docs": "jsdoc2md --template methods.hbs index.js > methods.md",
+    "commonjs": "mkdir -p commonjs && cp index.js commonjs/ti-jsondb.js"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,5 @@
     "url": "https://github.com/caspahouzer/ti-jsondb/issues"
   },
   "homepage": "https://github.com/caspahouzer/ti-jsondb#readme",
-  "devDependencies": {
-    "jsdoc-to-markdown": "^7.1.1"
-  }
+  "devDependencies": {}
 }
