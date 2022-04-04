@@ -1,6 +1,6 @@
 {
   "name": "@caspahouzer/ti-jsondb",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A file based JSON database for TiDev Titanium",
   "main": "index.js",
   "scripts": {
