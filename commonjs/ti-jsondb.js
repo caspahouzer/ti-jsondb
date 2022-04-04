@@ -34,7 +34,7 @@ export default class TiJsonDB {
             }
         }
 
-        this.reloadAllTables;
+        this._reloadAllTables;
         return this;
     }
 
@@ -66,7 +66,7 @@ export default class TiJsonDB {
             dbFile.createFile();
             dbFile.write(JSON.stringify([]));
         }
-        this.reloadAllTables;
+        this._reloadAllTables;
         return this;
     }
 
@@ -97,13 +97,6 @@ export default class TiJsonDB {
                     operator: n[1],
                     value: n[2]
                 });
-
-
-
-
-
-
-
             });
         } else {
             this.query.conditions.where.push({
@@ -111,13 +104,6 @@ export default class TiJsonDB {
                 operator: operator,
                 value: value
             });
-
-
-
-
-
-
-
         }
 
         return this;
@@ -143,13 +129,6 @@ export default class TiJsonDB {
             order: order
         };
 
-
-
-
-
-
-
-
         return this;
     }
 
@@ -173,13 +152,6 @@ export default class TiJsonDB {
             limit: limit,
             offset: offset
         };
-
-
-
-
-
-
-
 
         return this;
     }
@@ -263,7 +235,7 @@ export default class TiJsonDB {
         if (this.allTables[this.query.table]) {
             this.allTables[this.query.table].deleteFile();
             delete this.allTables[this.query.table];
-            this.reloadAllTables;
+            this._reloadAllTables;
 
             if (onSuccess instanceof Function) {
                 onSuccess();
@@ -620,11 +592,16 @@ export default class TiJsonDB {
     }
 
     /**
+     * Helper functions
+     */
+
+    /**
      * Reload all existing tables to table -> file mapping
      * 
+     * @private
      * @returns {boolean}
      */
-    get reloadAllTables() {
+    get _reloadAllTables() {
         let allTables = this.dbFolderObject.getDirectoryListing();
         allTables = _.filter(allTables, (table) => {
             return table.indexOf('.json') > -1;
@@ -636,10 +613,6 @@ export default class TiJsonDB {
         });
         return true;
     }
-
-    /**
-     * Helper functions
-     */
 
     /**
      * Internal where
@@ -686,12 +659,6 @@ export default class TiJsonDB {
                                     default:
                                         throw new Error('ti-jsondb - Where: Operator "' + operator + '" not supported');
                                 }
-
-
-
-
-
-
 
                             });
                         });

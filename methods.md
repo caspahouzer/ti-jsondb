@@ -7,7 +7,6 @@ JSON Database functions overview
 * [TiJsonDB](#module_TiJsonDB)
     * [table(name)](#exp_module_TiJsonDB--table) ⇒ ⏏
         * [.last_insert_id](#module_TiJsonDB--table+last_insert_id) ⇒ <code>string</code>
-        * [.reloadAllTables](#module_TiJsonDB--table+reloadAllTables) ⇒ <code>boolean</code>
         * [.where(field, operator, value)](#module_TiJsonDB--table+where) ⇒
         * [.orderBy(key, order)](#module_TiJsonDB--table+orderBy) ⇒
         * [.limit(limit, offset)](#module_TiJsonDB--table+limit) ⇒
@@ -38,12 +37,6 @@ Set actual table to fetch from
 
 #### table.last\_insert\_id ⇒ <code>string</code>
 Return last item id
-
-**Kind**: instance property of [<code>table</code>](#exp_module_TiJsonDB--table)  
-<a name="module_TiJsonDB--table+reloadAllTables"></a>
-
-#### table.reloadAllTables ⇒ <code>boolean</code>
-Reload all existing tables to table -> file mapping
 
 **Kind**: instance property of [<code>table</code>](#exp_module_TiJsonDB--table)  
 <a name="module_TiJsonDB--table+where"></a>
