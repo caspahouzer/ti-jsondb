@@ -8,11 +8,17 @@ export default class TiJsonDB {
     /**
      * TiJsonDB constructor
      * 
+     * @param {object} options
+     * {
+     *  debug: true || false,
+     * }
+     * 
      * @alias module:constructor
      * @returns TiJsonDB
      */
     constructor(options = {}) {
         this.debug = options.debug || false;
+
         this.query = {};
         this.query.conditions = {};
         this.entries;
@@ -40,13 +46,17 @@ export default class TiJsonDB {
      * @returns TiJsonDB
      */
     table(name) {
+        if (!name) {
+            throw new Error('ti-jsondb - table: No table given');
+        }
+
         // Reset entries
         this.entries = null;
 
         // Reset query and conditions
         this.query = {};
         this.query.conditions = {};
-        this.query.table = name;
+        this.query.table = name.replace(/[^a-zA-Z]/g, '');
 
         const dbFile = Ti.Filesystem.getFile(this.dbPath, this._cleanString(this.query.table) + '.json');
         if (!dbFile.exists()) {
@@ -87,6 +97,13 @@ export default class TiJsonDB {
                     operator: n[1],
                     value: n[2]
                 });
+
+
+
+
+
+
+
             });
         } else {
             this.query.conditions.where.push({
@@ -94,6 +111,13 @@ export default class TiJsonDB {
                 operator: operator,
                 value: value
             });
+
+
+
+
+
+
+
         }
 
         return this;
@@ -119,6 +143,13 @@ export default class TiJsonDB {
             order: order
         };
 
+
+
+
+
+
+
+
         return this;
     }
 
@@ -142,6 +173,13 @@ export default class TiJsonDB {
             limit: limit,
             offset: offset
         };
+
+
+
+
+
+
+
 
         return this;
     }
@@ -242,6 +280,37 @@ export default class TiJsonDB {
     }
 
     /**
+     * Truncate table
+     * 
+     * @param {*} onSuccess 
+     * @param {*} onError 
+     * @returns {boolean} || function
+     */
+    truncate(onSuccess = null, onError = null) {
+        if (!this.query.table) {
+            throw new Error('ti-jsondb - Truncate: No table selected');
+        }
+
+        if (this.allTables[this.query.table]) {
+            this.entries = [];
+
+            if (this._persist()) {
+                if (onSuccess instanceof Function) {
+                    onSuccess(tableData);
+                    return;
+                }
+                return true;
+            }
+        }
+
+        if (onError instanceof Function) {
+            onError({error: 'Table "' + this.query.table + '" does not exist'});
+            return;
+        }
+        return false;
+    }
+
+    /**
      * Return last item
      * 
      * @param {*} onSuccess
@@ -282,6 +351,22 @@ export default class TiJsonDB {
      */
     update(tableData = {}, onSuccess = null, onError = null) {
         this.insert(tableData, onSuccess, onError);
+    }
+
+    /**
+     * Replace all data in table
+     * 
+     * @param {*} tableData 
+     * @param {*} onSuccess 
+     * @param {*} onError 
+     */
+    populate(tableData, onSuccess = null, onError = null) {
+        if (!this.query.table) {
+            throw new Error('ti-jsondb - Populate: No table selected');
+        }
+
+        this.truncate();
+        return this.insert(tableData, onSuccess, onError);
     }
 
     /**
@@ -601,6 +686,13 @@ export default class TiJsonDB {
                                     default:
                                         throw new Error('ti-jsondb - Where: Operator "' + operator + '" not supported');
                                 }
+
+
+
+
+
+
+
                             });
                         });
                     }
@@ -637,7 +729,7 @@ export default class TiJsonDB {
                 if (order === 'asc') {
                     this.entries = _.sortBy(this.entries, key);
                 }
-                return this
+                return this;
             }
             throw new Error('ti-jsondb - Sort: Table of objects "' + this.tableName + '" cannot be sorted');
         }
@@ -677,7 +769,7 @@ export default class TiJsonDB {
      */
     _generateId() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-            let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            let r = Math.random() * 16 | 0, v = c == 'x' ? r : r & 0x3 | 0x8;
             return v.toString(16);
         });
     }
@@ -702,5 +794,5 @@ export default class TiJsonDB {
         } catch (e) {
             return value;
         }
-    };
+    }
 }

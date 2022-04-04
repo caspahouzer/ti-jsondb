@@ -13,8 +13,10 @@ JSON Database functions overview
         * [.limit(limit, offset)](#module_TiJsonDB--table+limit) ⇒
         * [.delete(String, onSuccess, onError)](#module_TiJsonDB--table+delete) ⇒ <code>boolean</code>
         * [.destroy(onSuccess, onError)](#module_TiJsonDB--table+destroy) ⇒ <code>boolean</code>
+        * [.truncate(onSuccess, onError)](#module_TiJsonDB--table+truncate) ⇒ <code>boolean</code>
         * [.lastItem(onSuccess, onError)](#module_TiJsonDB--table+lastItem) ⇒ <code>object</code>
         * [.update(tableData, onSuccess, onError)](#module_TiJsonDB--table+update) ⇒
+        * [.populate(tableData, onSuccess, onError)](#module_TiJsonDB--table+populate)
         * [.insert(tableData, onSuccess, onError)](#module_TiJsonDB--table+insert) ⇒
         * [.get(onSuccess, onError)](#module_TiJsonDB--table+get) ⇒
         * [.getById(id)](#module_TiJsonDB--table+getById) ⇒
@@ -113,6 +115,19 @@ This function REALLY deletes the whole table
 | onSuccess | <code>\*</code> | <code></code> | 
 | onError | <code>\*</code> | <code></code> | 
 
+<a name="module_TiJsonDB--table+truncate"></a>
+
+#### table.truncate(onSuccess, onError) ⇒ <code>boolean</code>
+Truncate table
+
+**Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
+**Returns**: <code>boolean</code> - || function  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| onSuccess | <code>\*</code> | <code></code> | 
+| onError | <code>\*</code> | <code></code> | 
+
 <a name="module_TiJsonDB--table+lastItem"></a>
 
 #### table.lastItem(onSuccess, onError) ⇒ <code>object</code>
@@ -133,6 +148,19 @@ Update table data
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
 **Returns**: Array || Error  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| tableData | <code>\*</code> |  | 
+| onSuccess | <code>\*</code> | <code></code> | 
+| onError | <code>\*</code> | <code></code> | 
+
+<a name="module_TiJsonDB--table+populate"></a>
+
+#### table.populate(tableData, onSuccess, onError)
+Replace all data in table
+
+**Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
 
 | Param | Type | Default |
 | --- | --- | --- |
