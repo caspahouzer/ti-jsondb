@@ -3,7 +3,7 @@
  * 
  * @module TiJsonDB
  */
-export default class TiJsonDB {
+ export default class TiJsonDB {
 
     /**
      * TiJsonDB constructor
@@ -40,13 +40,17 @@ export default class TiJsonDB {
      * @returns TiJsonDB
      */
     table(name) {
+        if (!name) {
+            throw new Error('ti-jsondb - table: No table given');
+        }
+
         // Reset entries
         this.entries = null;
 
         // Reset query and conditions
         this.query = {};
         this.query.conditions = {};
-        this.query.table = name;
+        this.query.table = name.replace(/[^a-zA-Z]/g, '');
 
         const dbFile = Ti.Filesystem.getFile(this.dbPath, this._cleanString(this.query.table) + '.json');
         if (!dbFile.exists()) {
