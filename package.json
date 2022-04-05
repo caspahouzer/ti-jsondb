@@ -2,7 +2,7 @@
     "name": "@caspahouzer/ti-jsondb",
     "version": "1.0.7",
     "description": "A file based JSON database for TiDev Titanium",
-    "main": "index.js",
+    "main": "ti-jsondb.js",
     "scripts": {
         "docs": "jsdoc2md --template methods.hbs index.js > methods.md",
         "commonjs": "mkdir -p commonjs && cp index.js commonjs/ti-jsondb.js",
