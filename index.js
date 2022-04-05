@@ -58,14 +58,14 @@ export default class TiJsonDB {
         this.startTime = new Date().getTime();
 
         // Reset entries
-        this.entries = null;
+        this.entries = [];
 
         // Reset query and conditions
         this.query = {};
         this.query.conditions = {};
-        this.query.table = name.replace(/[^a-zA-Z]/g, '');
+        this.query.table = this._cleanString(name);
 
-        const dbFile = Ti.Filesystem.getFile(this.dbPath, this._cleanString(this.query.table) + '.json');
+        const dbFile = Ti.Filesystem.getFile(this.dbPath, this.query.table + '.json');
         if (!dbFile.exists()) {
             if (this.debug) {
                 console.log('DEBUG ti-jsondb - Table "' + this.query.table + '" does not exist and will be created');
@@ -380,107 +380,41 @@ export default class TiJsonDB {
      * @returns {Array} 
      */
     insert(tableData, onSuccess = null, onError = null) {
-        if (this.debug) {
-            console.log('DEBUG ti-jsondb - Insert ', tableData);
-        }
         if (!this.query.table) {
             throw new Error('ti-jsondb - Insert: No table selected');
         }
 
         if (!tableData) {
-            throw new Error('ti-jsondb - Insert: No data to push');
+            throw new Error('ti-jsondb - Insert: No data to insert');
         }
 
-        if (this.allTables[this.query.table]) {
-            let entries = this.get();
+        if (tableData instanceof Array) {
+            this.entries = this.entries.concat(tableData);
+        } else {
+            this.entries.push(tableData);
+        }
 
-            // add/update item:s in Array
-            if (entries instanceof Array) {
-
-                // Add single object
-                if (tableData instanceof Object) {
-                    let entryExists = false;
-                    if (tableData.id) {
-                        _.each(entries, (entry, i) => {
-                            if (entry.id === tableData.id) {
-                                entries[i] = tableData;
-                                entryExists = true;
-                            }
-                        });
-                    } else {
-                        tableData.id = this._generateId();
-                    }
-                    if (entryExists === false) {
-                        entries.push(tableData);
-                    }
-
-                    this.entries = entries;
-
-                    if (this._persist()) {
-                        if (onSuccess instanceof Function) {
-                            onSuccess(tableData);
-                            return;
-                        }
-
-                        return tableData;
-                    }
-                    if (onError instanceof Function) {
-                        onError({error: 'Could not write objects to table "' + this.query.table + '"'});
-                        return;
-                    }
-                    throw new Error('ti-jsondb - Push: Could not write object to table "' + this.query.table + '"');
-                }
-
-                // Add array of objects
+        if (this._persist()) {
+            if (this.debug) {
+                const endTime = new Date().getTime() - this.startTime;
                 if (tableData instanceof Array) {
-                    _.each(tableData, (data) => {
-
-                        if (data instanceof Object) {
-                            let entryExists = false;
-                            if (data.id) {
-                                _.each(entries, (entry, i) => {
-                                    if (entry.id === data.id) {
-                                        entries[i] = data;
-                                        entryExists = true;
-                                    }
-                                });
-                            } else {
-                                data.id = this._generateId();
-                            }
-                            if (entryExists === false) {
-                                entries.push(data);
-                            }
-
-                        }
-
-                    });
-                    this.entries = entries;
-                    if (this._persist()) {
-                        if (onSuccess instanceof Function) {
-                            onSuccess(tableData);
-                            return;
-                        }
-
-                        return tableData;
-                    }
-                    if (onError instanceof Function) {
-                        onError({error: 'Could not write objects to table "' + this.query.table + '"'});
-                        return;
-                    }
-                    throw new Error('ti-jsondb - Push: Could not write objects to table "' + this.query.table + '"');
+                    console.log('DEBUG ti-jsondb - Inserted ' + tableData.length + ' entries in ' + endTime + 'ms');
+                } else {
+                    console.log('DEBUG ti-jsondb - Inserted 1 entry in ' + endTime + 'ms');
                 }
             }
-
-            // Persist object in table
-            if (tableData instanceof Object) {
-                _.each(tableData, (value, key) => {entries[key] = value;});
-                this.entries = entries;
-                if (this._persist()) {
-                    return tableData;
-                }
+            if (onSuccess instanceof Function) {
+                onSuccess(tableData);
+                return;
             }
+
+            return tableData;
         }
-        throw new Error('ti-jsondb - Insert: Table "' + this.query.table + '" does not exist');
+        if (onError instanceof Function) {
+            onError({error: 'Could not write objects to table "' + this.query.table + '"'});
+            return;
+        }
+        throw new Error('ti-jsondb - Insert: Could not write object to table "' + this.query.table + '"');
     }
 
     /**
@@ -809,7 +743,7 @@ export default class TiJsonDB {
             return '';
         }
         try {
-            let endString = value.replace(/[^a-zA-Z0-9\/.]/g, '_');
+            let endString = value.replace(/[^a-zA-Z0-9]/g, '_');
             if (endString) {
                 endString = endString.toLowerCase();
             }
