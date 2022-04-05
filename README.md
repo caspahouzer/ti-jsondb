@@ -12,7 +12,7 @@ Follow these [guidelines](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SD
 
 > You can also use that as a normal **/lib** file.
 
-To do that, copy [commonjs/ti-jsondb.js](commonjs/ti-jsondb.js) to `lib/ti-jsondb.js`
+To do that, copy [ti-jsondb.js](ti-jsondb.js) to `lib/ti-jsondb.js`
 
 ```javascript
 // Use as node module
