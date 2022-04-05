@@ -11,26 +11,31 @@ export default class TiJsonDB {
      * @param {object} options
      * {
      *  debug: true || false,
-     * }
+     * } 
      * 
      * @alias module:constructor
      * @returns TiJsonDB
      */
     constructor(options = {}) {
-        this.debug = options.debug || false;
+        if (Ti) {
 
-        this.query = {};
-        this.query.conditions = {};
-        this.entries;
+            this.debug = options.debug || false;
 
-        this.startTime = new Date().getTime();
+            this.query = {};
+            this.query.conditions = {};
+            this.entries;
 
-        this.dbPath = Ti.Filesystem.applicationDataDirectory + 'tijsondb/';
-        this.dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
-        this.allTables = {};
-        if (!this.dbFolderObject.exists()) {
-            if (!this.dbFolderObject.createDirectory(true)) {
-                throw new Error('ti-jsondb - Could not create directory tijsondb');
+            if (Ti.Filesystem.applicationDataDirectory === undefined) {
+                Ti.Filesystem.applicationDataDirectory = 'appdata/';
+            }
+            this.dbPath = Ti.Filesystem.applicationDataDirectory + 'tijsondb/';
+            console.log(this.dbPath)
+            this.dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
+            this.allTables = {};
+            if (!this.dbFolderObject.exists()) {
+                if (!this.dbFolderObject.createDirectory(true)) {
+                    throw new Error('ti-jsondb - Could not create directory tijsondb');
+                }
             }
         }
 
@@ -49,6 +54,8 @@ export default class TiJsonDB {
         if (!name) {
             throw new Error('ti-jsondb - table: No table given');
         }
+
+        this.startTime = new Date().getTime();
 
         // Reset entries
         this.entries = null;
@@ -156,68 +163,6 @@ export default class TiJsonDB {
         return this;
     }
 
-
-    /**
-     * Delete item by id
-     * 
-     * @param {mixed} String || Array id
-     * @param {*} onSuccess
-     * @param {*} onError
-     * @returns {boolean} || function
-     */
-    delete(id, onSuccess = null, onError = null) {
-        if (!id) {
-            throw new Error('ti-jsondb - Delete: No id given');
-        }
-
-        if (!this.query.table) {
-            throw new Error('ti-jsondb - Delete: No table selected');
-        }
-
-        if (this.entries) {
-            let deletedEntries = this.entries.length;
-            if (this.debug) {
-                console.log('DEBUG ti-jsondb - Delete ', id);
-            }
-
-            this.entries = _.filter(this.entries, (n) => {
-                if (id instanceof Array) {
-                    return _.indexOf(id, n.id) === -1;
-                }
-
-                return n.id !== id;
-            });
-
-            if (this.debug) {
-                deletedEntries -= this.entries.length;
-                console.log('DEBUG ti-jsondb - Deleted ' + deletedEntries + ' item(s) of ', this.entries.length);
-            }
-
-            this._persist();
-
-            if (onSuccess instanceof Function) {
-                if (id instanceof Array) {
-                    onSuccess(id);
-                    return;
-                }
-                onSuccess({id: id});
-                return;
-            }
-
-            return this._persist();
-        }
-        if (onError instanceof Function) {
-            if (id instanceof Array) {
-                onError(id);
-                return;
-            }
-            onError({id: id, message: 'ti-jsondb - Delete: No item found with id "' + id + '"'});
-            return;
-        }
-
-        return false;
-    }
-
     /**
      * !! Warning !! 
      * 
@@ -236,6 +181,10 @@ export default class TiJsonDB {
             this.allTables[this.query.table].deleteFile();
             delete this.allTables[this.query.table];
             this._reloadAllTables;
+
+            if (this.debug) {
+                console.log('DEBUG ti-jsondb - Destroy: Removed table "' + this.query.table + '"');
+            }
 
             if (onSuccess instanceof Function) {
                 onSuccess();
@@ -314,7 +263,51 @@ export default class TiJsonDB {
     }
 
     /**
-     * Update table data
+     * Delete entries
+     * 
+     * @param {*} onSuccess
+     * @param {*} onError
+     * @returns {boolean} || function
+     */
+    delete(onSuccess = null, onError = null) {
+        if (!this.query.table) {
+            throw new Error('ti-jsondb - Delete: No table selected');
+        }
+
+        // Get all entries without conditions to compare
+        this.query.conditions.useConditions = false;
+        const allEntries = this.get();
+
+        // Get all entries from conditions
+        this.query.conditions.useConditions = true
+        const filteredEntries = this.get();
+
+        // Get the difference between all entries and filtered entries
+        const difference = allEntries.filter(x => !filteredEntries.includes(x));
+
+        if (this.debug) {
+            let deleteCounter = allEntries.length - difference.length;
+            console.log('DEBUG ti-jsondb - Deleted ' + deleteCounter + ' entries');
+        }
+
+        this.entries = difference;
+
+        if (this._persist()) {
+            if (onSuccess instanceof Function) {
+                onSuccess(difference);
+                return;
+            }
+            return true;
+        }
+        if (onError instanceof Function) {
+            onError({error: 'Could not delete objects from table "' + this.query.table + '"'});
+            return;
+        }
+        throw new Error('ti-jsondb - Delete: Error while persisting data');
+    }
+
+    /**
+     * Update entries
      * 
      * @param {*} tableData 
      * @param {*} onSuccess
@@ -322,7 +315,43 @@ export default class TiJsonDB {
      * @returns Array || Error
      */
     update(tableData = {}, onSuccess = null, onError = null) {
-        this.insert(tableData, onSuccess, onError);
+        if (!this.query.table) {
+            throw new Error('ti-jsondb - Update: No table selected');
+        }
+
+        // Get all entries from conditions
+        this.get();
+
+        let updateCounter = 0;
+
+        if (this.entries) {
+            _.each(this.entries, (entry, i) => {
+                for (const [key, value] of Object.entries(entry)) {
+                    if (tableData[key] !== undefined) {
+                        entry[key] = tableData[key];
+                    }
+                }
+                this.entries[i] = entry;
+                updateCounter++;
+            });
+            if (this.debug) {
+                const endTime = new Date().getTime() - this.startTime;
+                console.log('DEBUG ti-jsondb - Updated ' + updateCounter + ' entrie(s) in ' + endTime + 'ms');
+            }
+            if (this._persist()) {
+                if (onSuccess instanceof Function) {
+                    onSuccess(this.entries);
+                    return;
+                }
+                return this.entries;
+            }
+            throw new Error('ti-jsondb - Update: Error while persisting data');
+        }
+        if (onError instanceof Function) {
+            onError({error: 'Update "' + this.query.table + '" failed'});
+            return;
+        }
+        return false;
     }
 
     /**
@@ -473,36 +502,39 @@ export default class TiJsonDB {
                 }
             }
 
-            /**
-             * Where
-             */
-            if (this.query.conditions.where) {
-                if (this.query.conditions.where.length > 0) {
-                    if (this.debug) {
-                        console.log('DEBUG ti-jsondb - Get: Conditions Where', this.query.conditions.where);
+            if (this.query.conditions.useConditions !== false) {
+                /**
+                 * Where
+                 */
+                if (this.query.conditions.where) {
+                    if (this.query.conditions.where.length > 0) {
+                        if (this.debug) {
+                            console.log('DEBUG ti-jsondb - Get: Conditions Where', this.query.conditions.where);
+                        }
+                        this._where();
                     }
-                    this._where();
                 }
-            }
 
-            /**
-             * OrderBy
-             */
-            if (this.query.conditions.orderBy) {
-                if (this.debug) {
-                    console.log('DEBUG ti-jsondb - Get: Conditions OrderBy', this.query.conditions.orderBy);
+                /**
+                 * OrderBy
+                 */
+                if (this.query.conditions.orderBy) {
+                    if (this.debug) {
+                        console.log('DEBUG ti-jsondb - Get: Conditions OrderBy', this.query.conditions.orderBy);
+                    }
+                    this._orderBy();
                 }
-                this._orderBy();
-            }
 
-            /**
-             * Limit
-             */
-            if (this.query.conditions.limit) {
-                if (this.debug) {
-                    console.log('DEBUG ti-jsondb - Get: Conditions Limit', this.query.conditions.limit);
+                /**
+                 * Limit
+                 */
+                if (this.query.conditions.limit) {
+                    if (this.debug) {
+                        console.log('DEBUG ti-jsondb - Get: Conditions Limit', this.query.conditions.limit);
+                    }
+                    this._limit();
                 }
-                this._limit();
+
             }
 
             if (this.debug) {
@@ -520,7 +552,7 @@ export default class TiJsonDB {
                 return;
             }
 
-            return this.entries;
+            return this.entries || [];
         }
 
         throw new Error('ti-jsondb - Get: Table "' + this.query.table + '" does not exist');
@@ -532,8 +564,12 @@ export default class TiJsonDB {
      * @param {string} id 
      * @returns Object || Error
      */
-    getById(id, onSuccess = null, onError = null) {
-        return this.getSingle('id', id, onSuccess = null, onError = null);
+    getById(id) {
+        if (!id) {
+            throw new Error('ti-jsondb - GetById: No id provided');
+        }
+
+        return this.getSingle('id', id);
     }
 
     /**
@@ -558,6 +594,17 @@ export default class TiJsonDB {
             return entry[field] === value;
         });
 
+        if (this.debug) {
+            console.log('DEBUG ti-jsondb - Fetch single from "' + field + '" by "' + value + '"');
+        }
+
+        if (entry === undefined) {
+            if (onError instanceof Function) {
+                onError({message: 'No entry found'});
+            }
+            return
+        }
+
         if (entry instanceof Array) {
             entry = entry[0];
         }
@@ -572,10 +619,7 @@ export default class TiJsonDB {
             return;
         }
 
-        if (this.debug) {
-            console.log('DEBUG ti-jsondb - Fetch single from "' + field + '" by "' + value + '": ', entry);
-        }
-
+        return entry;
     }
 
     /**
@@ -630,6 +674,7 @@ export default class TiJsonDB {
                             let field = where.field;
                             let value = where.value;
                             let operator = where.operator || '=';
+                            // console.log('this.entries', this.query.table, this.entries);
                             this.entries = _.filter(this.entries, (entry) => {
                                 // Check if field is set
                                 if (entry[field] === undefined) {
@@ -655,12 +700,15 @@ export default class TiJsonDB {
                                     case 'not like':
                                         return entry[field].indexOf(value) === -1;
                                     case 'between':
+                                        if (!value instanceof Array) {
+                                            throw new Error('ti-jsondb - Where: Operator "' + operator + '" needs an array as value');
+                                        }
                                         return entry[field] >= value[0] && entry[field] <= value[1];
                                     default:
                                         throw new Error('ti-jsondb - Where: Operator "' + operator + '" not supported');
                                 }
-
                             });
+                            // console.log('this.entries after filter', this.query.table, this.entries);
                         });
                     }
                 }
@@ -731,7 +779,7 @@ export default class TiJsonDB {
     /**
      * Generate a unique id
      * 
-     * @private
+     * @private 
      * @returns GUID
      */
     _generateId() {

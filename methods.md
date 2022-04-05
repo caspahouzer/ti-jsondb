@@ -10,10 +10,10 @@ JSON Database functions overview
         * [.where(field, operator, value)](#module_TiJsonDB--table+where) ⇒
         * [.orderBy(key, order)](#module_TiJsonDB--table+orderBy) ⇒
         * [.limit(limit, offset)](#module_TiJsonDB--table+limit) ⇒
-        * [.delete(String, onSuccess, onError)](#module_TiJsonDB--table+delete) ⇒ <code>boolean</code>
         * [.destroy(onSuccess, onError)](#module_TiJsonDB--table+destroy) ⇒ <code>boolean</code>
         * [.truncate(onSuccess, onError)](#module_TiJsonDB--table+truncate) ⇒ <code>boolean</code>
         * [.lastItem(onSuccess, onError)](#module_TiJsonDB--table+lastItem) ⇒ <code>object</code>
+        * [.delete(onSuccess, onError)](#module_TiJsonDB--table+delete) ⇒ <code>boolean</code>
         * [.update(tableData, onSuccess, onError)](#module_TiJsonDB--table+update) ⇒
         * [.populate(tableData, onSuccess, onError)](#module_TiJsonDB--table+populate)
         * [.insert(tableData, onSuccess, onError)](#module_TiJsonDB--table+insert) ⇒
@@ -79,20 +79,6 @@ Limits the result
 | limit | <code>number</code> | <code></code> | 
 | offset | <code>number</code> | <code>0</code> | 
 
-<a name="module_TiJsonDB--table+delete"></a>
-
-#### table.delete(String, onSuccess, onError) ⇒ <code>boolean</code>
-Delete item by id
-
-**Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: <code>boolean</code> - || function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| String | <code>mixed</code> | || Array id |
-| onSuccess | <code>\*</code> |  |
-| onError | <code>\*</code> |  |
-
 <a name="module_TiJsonDB--table+destroy"></a>
 
 #### table.destroy(onSuccess, onError) ⇒ <code>boolean</code>
@@ -134,10 +120,23 @@ Return last item
 | onSuccess | <code>\*</code> | <code></code> | 
 | onError | <code>\*</code> | <code></code> | 
 
+<a name="module_TiJsonDB--table+delete"></a>
+
+#### table.delete(onSuccess, onError) ⇒ <code>boolean</code>
+Delete entries
+
+**Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
+**Returns**: <code>boolean</code> - || function  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| onSuccess | <code>\*</code> | <code></code> | 
+| onError | <code>\*</code> | <code></code> | 
+
 <a name="module_TiJsonDB--table+update"></a>
 
 #### table.update(tableData, onSuccess, onError) ⇒
-Update table data
+Update entries
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
 **Returns**: Array || Error  
