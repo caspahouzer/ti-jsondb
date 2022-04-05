@@ -14,7 +14,7 @@ export default class TiJsonDB {
      * } 
      * 
      * @alias module:constructor
-     * @returns TiJsonDB
+     * @returns {TiJsonDB}
      */
     constructor(options = {}) {
         if (Ti) {
@@ -48,7 +48,7 @@ export default class TiJsonDB {
      * 
      * @alias module:TiJsonDB
      * @param {*} name 
-     * @returns TiJsonDB
+     * @returns {TiJsonDB}
      */
     table(name) {
         if (!name) {
@@ -58,14 +58,14 @@ export default class TiJsonDB {
         this.startTime = new Date().getTime();
 
         // Reset entries
-        this.entries = null;
+        this.entries = [];
 
         // Reset query and conditions
         this.query = {};
         this.query.conditions = {};
-        this.query.table = name.replace(/[^a-zA-Z]/g, '');
+        this.query.table = this._cleanString(name);
 
-        const dbFile = Ti.Filesystem.getFile(this.dbPath, this._cleanString(this.query.table) + '.json');
+        const dbFile = Ti.Filesystem.getFile(this.dbPath, this.query.table + '.json');
         if (!dbFile.exists()) {
             if (this.debug) {
                 console.log('DEBUG ti-jsondb - Table "' + this.query.table + '" does not exist and will be created');
@@ -81,9 +81,9 @@ export default class TiJsonDB {
      * Simple where clause chained with AND
      * 
      * @param field {mixed} String || Array
-     * @param operator {String} '=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'in', 'not in', 'between'
+     * @param operator {String} '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
      * @param value {mixed}
-     * @returns Array || Error
+     * @returns {TiJsonDb}
      */
     where(field, operator = '=', value) {
         if (!this.query.table) {
@@ -121,7 +121,7 @@ export default class TiJsonDB {
      * 
      * @param {*} key 
      * @param {*} order  'asc' || 'desc' || 'rand'  
-     * @returns Array || Error
+     * @returns {TiJsonDb}
      */
     orderBy(key, order = 'asc') {
         if (this.debug) {
@@ -144,7 +144,7 @@ export default class TiJsonDB {
      * 
      * @param {number} limit 
      * @param {number} offset 
-     * @returns Array || Error
+     * @returns {TiJsonDb}
      */
     limit(limit = null, offset = 0) {
         if (this.debug) {
@@ -170,7 +170,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns {boolean} || function
+     * @returns {Boolean}
      */
     destroy(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -205,7 +205,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess 
      * @param {*} onError 
-     * @returns {boolean} || function
+     * @returns {Boolean}
      */
     truncate(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -236,7 +236,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns {object} || function
+     * @returns {Object} || function
      */
     lastItem(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -267,7 +267,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns {boolean} || function
+     * @returns {Boolean}
      */
     delete(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -312,7 +312,7 @@ export default class TiJsonDB {
      * @param {*} tableData 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns Array || Error
+     * @returns {Array}
      */
     update(tableData = {}, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -360,6 +360,7 @@ export default class TiJsonDB {
      * @param {*} tableData 
      * @param {*} onSuccess 
      * @param {*} onError 
+     * @returns {Array}
      */
     populate(tableData, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -376,110 +377,44 @@ export default class TiJsonDB {
      * @param {*} tableData 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns Array || Error
+     * @returns {Array} 
      */
     insert(tableData, onSuccess = null, onError = null) {
-        if (this.debug) {
-            console.log('DEBUG ti-jsondb - Insert ', tableData);
-        }
         if (!this.query.table) {
             throw new Error('ti-jsondb - Insert: No table selected');
         }
 
         if (!tableData) {
-            throw new Error('ti-jsondb - Insert: No data to push');
+            throw new Error('ti-jsondb - Insert: No data to insert');
         }
 
-        if (this.allTables[this.query.table]) {
-            let entries = this.get();
+        if (tableData instanceof Array) {
+            this.entries = this.entries.concat(tableData);
+        } else {
+            this.entries.push(tableData);
+        }
 
-            // add/update item:s in Array
-            if (entries instanceof Array) {
-
-                // Add single object
-                if (tableData instanceof Object) {
-                    let entryExists = false;
-                    if (tableData.id) {
-                        _.each(entries, (entry, i) => {
-                            if (entry.id === tableData.id) {
-                                entries[i] = tableData;
-                                entryExists = true;
-                            }
-                        });
-                    } else {
-                        tableData.id = this._generateId();
-                    }
-                    if (entryExists === false) {
-                        entries.push(tableData);
-                    }
-
-                    this.entries = entries;
-
-                    if (this._persist()) {
-                        if (onSuccess instanceof Function) {
-                            onSuccess(tableData);
-                            return;
-                        }
-
-                        return tableData;
-                    }
-                    if (onError instanceof Function) {
-                        onError({error: 'Could not write objects to table "' + this.query.table + '"'});
-                        return;
-                    }
-                    throw new Error('ti-jsondb - Push: Could not write object to table "' + this.query.table + '"');
-                }
-
-                // Add array of objects
+        if (this._persist()) {
+            if (this.debug) {
+                const endTime = new Date().getTime() - this.startTime;
                 if (tableData instanceof Array) {
-                    _.each(tableData, (data) => {
-
-                        if (data instanceof Object) {
-                            let entryExists = false;
-                            if (data.id) {
-                                _.each(entries, (entry, i) => {
-                                    if (entry.id === data.id) {
-                                        entries[i] = data;
-                                        entryExists = true;
-                                    }
-                                });
-                            } else {
-                                data.id = this._generateId();
-                            }
-                            if (entryExists === false) {
-                                entries.push(data);
-                            }
-
-                        }
-
-                    });
-                    this.entries = entries;
-                    if (this._persist()) {
-                        if (onSuccess instanceof Function) {
-                            onSuccess(tableData);
-                            return;
-                        }
-
-                        return tableData;
-                    }
-                    if (onError instanceof Function) {
-                        onError({error: 'Could not write objects to table "' + this.query.table + '"'});
-                        return;
-                    }
-                    throw new Error('ti-jsondb - Push: Could not write objects to table "' + this.query.table + '"');
+                    console.log('DEBUG ti-jsondb - Inserted ' + tableData.length + ' entries in ' + endTime + 'ms');
+                } else {
+                    console.log('DEBUG ti-jsondb - Inserted 1 entry in ' + endTime + 'ms');
                 }
             }
-
-            // Persist object in table
-            if (tableData instanceof Object) {
-                _.each(tableData, (value, key) => {entries[key] = value;});
-                this.entries = entries;
-                if (this._persist()) {
-                    return tableData;
-                }
+            if (onSuccess instanceof Function) {
+                onSuccess(tableData);
+                return;
             }
+
+            return tableData;
         }
-        throw new Error('ti-jsondb - Insert: Table "' + this.query.table + '" does not exist');
+        if (onError instanceof Function) {
+            onError({error: 'Could not write objects to table "' + this.query.table + '"'});
+            return;
+        }
+        throw new Error('ti-jsondb - Insert: Could not write object to table "' + this.query.table + '"');
     }
 
     /**
@@ -487,7 +422,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns Array || Error
+     * @returns {Array}
      */
     get(onSuccess = null, onError = null) {
 
@@ -562,7 +497,7 @@ export default class TiJsonDB {
      * Fetch single entry by id
      * 
      * @param {string} id 
-     * @returns Object || Error
+     * @returns {Object}
      */
     getById(id) {
         if (!id) {
@@ -577,11 +512,19 @@ export default class TiJsonDB {
      * 
      * @param {string} field 
      * @param {mixed} value 
-     * @returns Object || Error
+     * @returns {Object}
      */
     getSingle(field, value, onSuccess = null, onError = null) {
         if (!this.query.table) {
             throw new Error('ti-jsondb - : No table selected');
+        }
+
+        if (!field) {
+            throw new Error('ti-jsondb - getSingle: No field provided');
+        }
+
+        if (!value) {
+            throw new Error('ti-jsondb - getSingle: No value provided');
         }
 
         // if entries not set, fetch them
@@ -643,7 +586,7 @@ export default class TiJsonDB {
      * Reload all existing tables to table -> file mapping
      * 
      * @private
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     get _reloadAllTables() {
         let allTables = this.dbFolderObject.getDirectoryListing();
@@ -674,7 +617,6 @@ export default class TiJsonDB {
                             let field = where.field;
                             let value = where.value;
                             let operator = where.operator || '=';
-                            // console.log('this.entries', this.query.table, this.entries);
                             this.entries = _.filter(this.entries, (entry) => {
                                 // Check if field is set
                                 if (entry[field] === undefined) {
@@ -684,6 +626,7 @@ export default class TiJsonDB {
                                     case '=':
                                         return entry[field].toLowerCase() === value.toLowerCase();
                                     case '!=':
+                                    case '<>':
                                         return entry[field].toLowerCase() !== value.toLowerCase();
                                     case '>':
                                         return entry[field] > value;
@@ -708,7 +651,6 @@ export default class TiJsonDB {
                                         throw new Error('ti-jsondb - Where: Operator "' + operator + '" not supported');
                                 }
                             });
-                            // console.log('this.entries after filter', this.query.table, this.entries);
                         });
                     }
                 }
@@ -767,7 +709,7 @@ export default class TiJsonDB {
      * Persist data to file
      * 
      * @private
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     _persist() {
         if (this.allTables[this.query.table].write(JSON.stringify(this.entries))) {
@@ -801,7 +743,7 @@ export default class TiJsonDB {
             return '';
         }
         try {
-            let endString = value.replace(/[^a-zA-Z0-9\/.]/g, '_');
+            let endString = value.replace(/[^a-zA-Z0-9]/g, '_');
             if (endString) {
                 endString = endString.toLowerCase();
             }
