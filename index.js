@@ -17,25 +17,19 @@ export default class TiJsonDB {
      * @returns {TiJsonDB}
      */
     constructor(options = {}) {
-        if (Ti) {
+        this.debug = options.debug || false;
 
-            this.debug = options.debug || false;
+        this.query = {};
+        this.query.conditions = {};
+        this.entries;
 
-            this.query = {};
-            this.query.conditions = {};
-            this.entries;
-
-            if (Ti.Filesystem.applicationDataDirectory === undefined) {
-                Ti.Filesystem.applicationDataDirectory = 'appdata/';
-            }
-            this.dbPath = Ti.Filesystem.applicationDataDirectory + 'tijsondb/';
-            console.log(this.dbPath)
-            this.dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
-            this.allTables = {};
-            if (!this.dbFolderObject.exists()) {
-                if (!this.dbFolderObject.createDirectory(true)) {
-                    throw new Error('ti-jsondb - Could not create directory tijsondb');
-                }
+        this.dbPath = Ti.Filesystem.applicationDataDirectory + 'tijsondb/';
+        console.log(this.dbPath)
+        this.dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
+        this.allTables = {};
+        if (!this.dbFolderObject.exists()) {
+            if (!this.dbFolderObject.createDirectory(true)) {
+                throw new Error('ti-jsondb - Could not create directory tijsondb');
             }
         }
 
@@ -389,8 +383,16 @@ export default class TiJsonDB {
         }
 
         if (tableData instanceof Array) {
+            _.each(tableData, (entry, i) => {
+                if (!tableData[i].id) {
+                    tableData[i].id = this._generateId();
+                }
+            });
             this.entries = this.entries.concat(tableData);
         } else {
+            if (!tableData.id) {
+                tableData.id = this._generateId();
+            }
             this.entries.push(tableData);
         }
 
