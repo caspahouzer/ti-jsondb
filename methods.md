@@ -5,29 +5,28 @@ JSON Database functions overview
 
 
 * [TiJsonDB](#module_TiJsonDB)
-    * [table(name)](#exp_module_TiJsonDB--table) ⇒ ⏏
+    * [table(name)](#exp_module_TiJsonDB--table) ⇒ <code>TiJsonDB</code> ⏏
         * [.last_insert_id](#module_TiJsonDB--table+last_insert_id) ⇒ <code>string</code>
-        * [.where(field, operator, value)](#module_TiJsonDB--table+where) ⇒
-        * [.orderBy(key, order)](#module_TiJsonDB--table+orderBy) ⇒
-        * [.limit(limit, offset)](#module_TiJsonDB--table+limit) ⇒
-        * [.destroy(onSuccess, onError)](#module_TiJsonDB--table+destroy) ⇒ <code>boolean</code>
-        * [.truncate(onSuccess, onError)](#module_TiJsonDB--table+truncate) ⇒ <code>boolean</code>
-        * [.lastItem(onSuccess, onError)](#module_TiJsonDB--table+lastItem) ⇒ <code>object</code>
-        * [.delete(onSuccess, onError)](#module_TiJsonDB--table+delete) ⇒ <code>boolean</code>
-        * [.update(tableData, onSuccess, onError)](#module_TiJsonDB--table+update) ⇒
-        * [.populate(tableData, onSuccess, onError)](#module_TiJsonDB--table+populate)
-        * [.insert(tableData, onSuccess, onError)](#module_TiJsonDB--table+insert) ⇒
-        * [.get(onSuccess, onError)](#module_TiJsonDB--table+get) ⇒
-        * [.getById(id)](#module_TiJsonDB--table+getById) ⇒
-        * [.getSingle(field, value)](#module_TiJsonDB--table+getSingle) ⇒
+        * [.where(field, operator, value)](#module_TiJsonDB--table+where) ⇒ <code>TiJsonDb</code>
+        * [.orderBy(key, order)](#module_TiJsonDB--table+orderBy) ⇒ <code>TiJsonDb</code>
+        * [.limit(limit, offset)](#module_TiJsonDB--table+limit) ⇒ <code>TiJsonDb</code>
+        * [.destroy(onSuccess, onError)](#module_TiJsonDB--table+destroy) ⇒ <code>Boolean</code>
+        * [.truncate(onSuccess, onError)](#module_TiJsonDB--table+truncate) ⇒ <code>Boolean</code>
+        * [.lastItem(onSuccess, onError)](#module_TiJsonDB--table+lastItem) ⇒ <code>Object</code>
+        * [.delete(onSuccess, onError)](#module_TiJsonDB--table+delete) ⇒ <code>Boolean</code>
+        * [.update(tableData, onSuccess, onError)](#module_TiJsonDB--table+update) ⇒ <code>Array</code>
+        * [.populate(tableData, onSuccess, onError)](#module_TiJsonDB--table+populate) ⇒ <code>Array</code>
+        * [.insert(tableData, onSuccess, onError)](#module_TiJsonDB--table+insert) ⇒ <code>Array</code>
+        * [.get(onSuccess, onError)](#module_TiJsonDB--table+get) ⇒ <code>Array</code>
+        * [.getById(id)](#module_TiJsonDB--table+getById) ⇒ <code>Object</code>
+        * [.getSingle(field, value)](#module_TiJsonDB--table+getSingle) ⇒ <code>Object</code>
 
 <a name="exp_module_TiJsonDB--table"></a>
 
-### table(name) ⇒ ⏏
+### table(name) ⇒ <code>TiJsonDB</code> ⏏
 Set actual table to fetch from
 
 **Kind**: Exported function  
-**Returns**: TiJsonDB  
 
 | Param | Type |
 | --- | --- |
@@ -41,25 +40,23 @@ Return last item id
 **Kind**: instance property of [<code>table</code>](#exp_module_TiJsonDB--table)  
 <a name="module_TiJsonDB--table+where"></a>
 
-#### table.where(field, operator, value) ⇒
+#### table.where(field, operator, value) ⇒ <code>TiJsonDb</code>
 Simple where clause chained with AND
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: Array || Error  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | field | <code>mixed</code> |  | String || Array |
-| operator | <code>String</code> | <code>&#x3D;</code> | '=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'in', 'not in', 'between' |
+| operator | <code>String</code> | <code>&#x3D;</code> | '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between' |
 | value | <code>mixed</code> |  |  |
 
 <a name="module_TiJsonDB--table+orderBy"></a>
 
-#### table.orderBy(key, order) ⇒
+#### table.orderBy(key, order) ⇒ <code>TiJsonDb</code>
 Order by field
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: Array || Error  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -68,11 +65,10 @@ Order by field
 
 <a name="module_TiJsonDB--table+limit"></a>
 
-#### table.limit(limit, offset) ⇒
+#### table.limit(limit, offset) ⇒ <code>TiJsonDb</code>
 Limits the result
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: Array || Error  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -81,13 +77,12 @@ Limits the result
 
 <a name="module_TiJsonDB--table+destroy"></a>
 
-#### table.destroy(onSuccess, onError) ⇒ <code>boolean</code>
+#### table.destroy(onSuccess, onError) ⇒ <code>Boolean</code>
 !! Warning !! 
 
 This function REALLY deletes the whole table
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: <code>boolean</code> - || function  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -96,11 +91,10 @@ This function REALLY deletes the whole table
 
 <a name="module_TiJsonDB--table+truncate"></a>
 
-#### table.truncate(onSuccess, onError) ⇒ <code>boolean</code>
+#### table.truncate(onSuccess, onError) ⇒ <code>Boolean</code>
 Truncate table
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: <code>boolean</code> - || function  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -109,11 +103,11 @@ Truncate table
 
 <a name="module_TiJsonDB--table+lastItem"></a>
 
-#### table.lastItem(onSuccess, onError) ⇒ <code>object</code>
+#### table.lastItem(onSuccess, onError) ⇒ <code>Object</code>
 Return last item
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: <code>object</code> - || function  
+**Returns**: <code>Object</code> - || function  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -122,11 +116,10 @@ Return last item
 
 <a name="module_TiJsonDB--table+delete"></a>
 
-#### table.delete(onSuccess, onError) ⇒ <code>boolean</code>
+#### table.delete(onSuccess, onError) ⇒ <code>Boolean</code>
 Delete entries
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: <code>boolean</code> - || function  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -135,11 +128,10 @@ Delete entries
 
 <a name="module_TiJsonDB--table+update"></a>
 
-#### table.update(tableData, onSuccess, onError) ⇒
+#### table.update(tableData, onSuccess, onError) ⇒ <code>Array</code>
 Update entries
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: Array || Error  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -149,7 +141,7 @@ Update entries
 
 <a name="module_TiJsonDB--table+populate"></a>
 
-#### table.populate(tableData, onSuccess, onError)
+#### table.populate(tableData, onSuccess, onError) ⇒ <code>Array</code>
 Replace all data in table
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
@@ -162,11 +154,10 @@ Replace all data in table
 
 <a name="module_TiJsonDB--table+insert"></a>
 
-#### table.insert(tableData, onSuccess, onError) ⇒
+#### table.insert(tableData, onSuccess, onError) ⇒ <code>Array</code>
 Insert data into table
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: Array || Error  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -176,11 +167,10 @@ Insert data into table
 
 <a name="module_TiJsonDB--table+get"></a>
 
-#### table.get(onSuccess, onError) ⇒
+#### table.get(onSuccess, onError) ⇒ <code>Array</code>
 Fetch data from table
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: Array || Error  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -189,11 +179,10 @@ Fetch data from table
 
 <a name="module_TiJsonDB--table+getById"></a>
 
-#### table.getById(id) ⇒
+#### table.getById(id) ⇒ <code>Object</code>
 Fetch single entry by id
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: Object || Error  
 
 | Param | Type |
 | --- | --- |
@@ -201,11 +190,10 @@ Fetch single entry by id
 
 <a name="module_TiJsonDB--table+getSingle"></a>
 
-#### table.getSingle(field, value) ⇒
+#### table.getSingle(field, value) ⇒ <code>Object</code>
 Returns the first found element
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: Object || Error  
 
 | Param | Type |
 | --- | --- |

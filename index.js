@@ -14,7 +14,7 @@ export default class TiJsonDB {
      * } 
      * 
      * @alias module:constructor
-     * @returns TiJsonDB
+     * @returns {TiJsonDB}
      */
     constructor(options = {}) {
         if (Ti) {
@@ -48,7 +48,7 @@ export default class TiJsonDB {
      * 
      * @alias module:TiJsonDB
      * @param {*} name 
-     * @returns TiJsonDB
+     * @returns {TiJsonDB}
      */
     table(name) {
         if (!name) {
@@ -81,9 +81,9 @@ export default class TiJsonDB {
      * Simple where clause chained with AND
      * 
      * @param field {mixed} String || Array
-     * @param operator {String} '=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'in', 'not in', 'between'
+     * @param operator {String} '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
      * @param value {mixed}
-     * @returns Array || Error
+     * @returns {TiJsonDb}
      */
     where(field, operator = '=', value) {
         if (!this.query.table) {
@@ -121,7 +121,7 @@ export default class TiJsonDB {
      * 
      * @param {*} key 
      * @param {*} order  'asc' || 'desc' || 'rand'  
-     * @returns Array || Error
+     * @returns {TiJsonDb}
      */
     orderBy(key, order = 'asc') {
         if (this.debug) {
@@ -144,7 +144,7 @@ export default class TiJsonDB {
      * 
      * @param {number} limit 
      * @param {number} offset 
-     * @returns Array || Error
+     * @returns {TiJsonDb}
      */
     limit(limit = null, offset = 0) {
         if (this.debug) {
@@ -170,7 +170,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns {boolean} || function
+     * @returns {Boolean}
      */
     destroy(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -205,7 +205,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess 
      * @param {*} onError 
-     * @returns {boolean} || function
+     * @returns {Boolean}
      */
     truncate(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -236,7 +236,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns {object} || function
+     * @returns {Object} || function
      */
     lastItem(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -267,7 +267,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns {boolean} || function
+     * @returns {Boolean}
      */
     delete(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -312,7 +312,7 @@ export default class TiJsonDB {
      * @param {*} tableData 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns Array || Error
+     * @returns {Array}
      */
     update(tableData = {}, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -360,6 +360,7 @@ export default class TiJsonDB {
      * @param {*} tableData 
      * @param {*} onSuccess 
      * @param {*} onError 
+     * @returns {Array}
      */
     populate(tableData, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -376,7 +377,7 @@ export default class TiJsonDB {
      * @param {*} tableData 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns Array || Error
+     * @returns {Array} 
      */
     insert(tableData, onSuccess = null, onError = null) {
         if (this.debug) {
@@ -487,7 +488,7 @@ export default class TiJsonDB {
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns Array || Error
+     * @returns {Array}
      */
     get(onSuccess = null, onError = null) {
 
@@ -562,7 +563,7 @@ export default class TiJsonDB {
      * Fetch single entry by id
      * 
      * @param {string} id 
-     * @returns Object || Error
+     * @returns {Object}
      */
     getById(id) {
         if (!id) {
@@ -577,11 +578,19 @@ export default class TiJsonDB {
      * 
      * @param {string} field 
      * @param {mixed} value 
-     * @returns Object || Error
+     * @returns {Object}
      */
     getSingle(field, value, onSuccess = null, onError = null) {
         if (!this.query.table) {
             throw new Error('ti-jsondb - : No table selected');
+        }
+
+        if (!field) {
+            throw new Error('ti-jsondb - getSingle: No field provided');
+        }
+
+        if (!value) {
+            throw new Error('ti-jsondb - getSingle: No value provided');
         }
 
         // if entries not set, fetch them
@@ -643,7 +652,7 @@ export default class TiJsonDB {
      * Reload all existing tables to table -> file mapping
      * 
      * @private
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     get _reloadAllTables() {
         let allTables = this.dbFolderObject.getDirectoryListing();
@@ -674,7 +683,6 @@ export default class TiJsonDB {
                             let field = where.field;
                             let value = where.value;
                             let operator = where.operator || '=';
-                            // console.log('this.entries', this.query.table, this.entries);
                             this.entries = _.filter(this.entries, (entry) => {
                                 // Check if field is set
                                 if (entry[field] === undefined) {
@@ -684,6 +692,7 @@ export default class TiJsonDB {
                                     case '=':
                                         return entry[field].toLowerCase() === value.toLowerCase();
                                     case '!=':
+                                    case '<>':
                                         return entry[field].toLowerCase() !== value.toLowerCase();
                                     case '>':
                                         return entry[field] > value;
@@ -708,7 +717,6 @@ export default class TiJsonDB {
                                         throw new Error('ti-jsondb - Where: Operator "' + operator + '" not supported');
                                 }
                             });
-                            // console.log('this.entries after filter', this.query.table, this.entries);
                         });
                     }
                 }
@@ -767,7 +775,7 @@ export default class TiJsonDB {
      * Persist data to file
      * 
      * @private
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     _persist() {
         if (this.allTables[this.query.table].write(JSON.stringify(this.entries))) {
