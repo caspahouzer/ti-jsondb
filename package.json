@@ -1,38 +1,37 @@
 {
-  "name": "@caspahouzer/ti-jsondb",
-  "version": "1.0.2",
-  "description": "A file based JSON database for TiDev Titanium",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "jsdoc2md --template methods.hbs index.js > methods.md",
-    "commonjs": "mkdir -p commonjs && cp index.js commonjs/ti-jsondb.js",
-    "prepublish": "npm run docs && npm run commonjs"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/caspahouzer/ti-jsondb.git"
-  },
-  "publishConfig": {
-    "access": "public",
-    "name": "ti-jsondb",
-    "registry": "https://npm.pkg.github.com/caspahouzer"
-  },
-  "keywords": [
-    "appcelerator",
-    "titanium",
-    "titanium-mobile",
-    "json",
-    "database",
-    "helper"
-  ],
-  "author": "Sebastian Klaus",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/caspahouzer/ti-jsondb/issues"
-  },
-  "homepage": "https://github.com/caspahouzer/ti-jsondb#readme",
-  "devDependencies": {
-    "jsdoc-to-markdown": "^7.1.1"
-  }
+    "name": "@caspahouzer/ti-jsondb",
+    "version": "1.0.3",
+    "description": "A file based JSON database for TiDev Titanium",
+    "main": "index.js",
+    "scripts": {
+        "docs": "jsdoc2md --template methods.hbs index.js > methods.md",
+        "commonjs": "mkdir -p commonjs && cp index.js commonjs/ti-jsondb.js",
+        "prepublish": "npm run docs && npm run commonjs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/caspahouzer/ti-jsondb.git"
+    },
+    "publishConfig": {
+        "access": "public",
+        "name": "ti-jsondb",
+        "registry": "https://npm.pkg.github.com/caspahouzer"
+    },
+    "keywords": [
+        "appcelerator",
+        "titanium",
+        "titanium-mobile",
+        "json",
+        "database",
+        "helper"
+    ],
+    "author": "Sebastian Klaus",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/caspahouzer/ti-jsondb/issues"
+    },
+    "homepage": "https://github.com/caspahouzer/ti-jsondb#readme",
+    "devDependencies": {
+        "jsdoc-to-markdown": "^7.1.1"
+    }
 }

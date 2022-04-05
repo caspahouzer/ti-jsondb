@@ -10,22 +10,16 @@ Follow these [guidelines](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SD
 
 ### Inititate the database as node module
 
+> You can also use that as a normal **/lib** file.
+
+To do that, copy [commonjs/ti-jsondb.js](commonjs/ti-jsondb.js) to `lib/ti-jsondb.js`
+
 ```javascript
+// Use as node module
 import TiJsonDB from '@caspahouzer/ti-jsondb';
-const jsonDatabase = new TiJsonDB({
-    debug: true,
-});
-```
-
-> You can also use that as a normal **/lib** file. 
-
-To do that, copy [commonjs/ti-jsondb.js](commonjs/ti-jsondb.js) to `lib/ti-json.db` and initiate with 
-
-```javascript
+// OR use as **lib** module
 import TiJsonDB from 'ti-jsondb';
-// OR
-const TiJsonDB = require('ti-jsondb');
-// THEN
+
 const jsonDatabase = new TiJsonDB({
     debug: true,
 });
@@ -34,28 +28,39 @@ const jsonDatabase = new TiJsonDB({
 ### Working with the database
 
 #### Create / Init table
+
 ```javascript
-const user = jsonDatabase.table('user');
+let user = jsonDatabase.table('user');
+let settings = jsonDatabase.table('settings');
+```
+
+#### Truncate table
+
+```javascript
+jsonDatabase.table('settings').truncate();
 ```
 
 #### Create example settings table with object content
+
 ```javascript
 // Insert and return
-let settings = jsonDatabase.table('settings').insert({ setting1: true, setting2: false, setting3: 'test' });
+settings = jsonDatabase.table('settings').insert({ id: 'settings', setting1: true, setting2: false, setting3: 'test' });
 
 // get all entries
-settings = jsonDatabase.table('settings').get();
+settings = jsonDatabase.table('settings').getById('settings');
 console.warn('settings', settings);
 ```
 
 #### Update object
+
 ```javascript
-jsonDatabase.table('settings').update({ setting1: false, setting2: true });
+jsonDatabase.table('settings').update({ id: 'settings', setting1: false, setting2: true });
 settings = jsonDatabase.table('settings').get();
 console.warn('settings after update', settings);
 ```
 
 #### Push data into table
+
 ```javascript
 jsonDatabase.table('user').insert({
     id: '38414679-1a10-42fe-be65-8e6b0b37b234', // remove this line to make a new entry
@@ -64,15 +69,17 @@ jsonDatabase.table('user').insert({
     gender: 'Male',
     email: 'john.doe@example.com',
 });
+console.warn('Last inserted id', jsonDatabase.last_insert_id);
 ```
 
 #### Delete table completely
+
 ```javascript
-jsonDatabase.table('test');
 jsonDatabase.table('test').destroy();
 ```
 
 #### Push item for delete action
+
 ```javascript
 jsonDatabase.table('user').insert({
     id: 'b8b79689-39a5-4885-80d8-9b8822e061c5',
@@ -84,6 +91,7 @@ jsonDatabase.table('user').insert({
 ```
 
 #### Fetch table
+
 ```javascript
 jsonDatabase
     .table('user')
@@ -95,53 +103,61 @@ jsonDatabase
 ```
 
 #### Delete item by id
+
 ```javascript
-jsonDatabase.table('user').delete('b8b79689-39a5-4885-80d8-9b8822e061c5');
+jsonDatabase.table('user').where('id', '=', 'b8b79689-39a5-4885-80d8-9b8822e061c5').delete();
 ```
 
 #### Delete multiple items
+
 ```javascript
 jsonDatabase.table('user').delete(['b8b79689-39a5-4885-80d8-9b8822e061c5', 'd6c52967-9654-4152-80f8-8fbc5a1e33d6']);
 ```
 
 #### fetch data with callback functions
+
 ```javascript
 jsonDatabase
     .table('user')
     .orderBy('first_name', 'rand')
     .get(
-        success = (data) => {
+        (success = (data) => {
             if (data.length > 0) {
                 console.warn('success', data[0]);
                 return;
             }
             console.warn('no entries found');
-        },
-        error = (error) => {
+        }),
+        (error = (error) => {
             console.warn('error', error);
-        });
+        })
+    );
 ```
 
 #### Fetch a single item by id
+
 ```javascript
-jsonDatabase.table('user').getById(
-    '38414679-1a10-42fe-be65-8e6b0b37b234',
-    (success = (data) => {
-        console.warn('onSuccess', data);
-    })
-);
+const singleUser = jsonDatabase.table('user').getById('d6c52967-9654-4152-80f8-8fbc5a1e33d6');
+console.warn('singleUser', singleUser);
 ```
 
 #### Fetch single item by field
+
 ```javascript
 jsonDatabase.table('user').getSingle(
     'first_name',
     'Jane',
-    success = (data) => {
-        console.warn('onSuccess', data);
-    });
+    (success = (data) => {
+        console.warn('success getSingle', data);
+    }),
+    (error = (error) => {
+        console.warn('error getSingle', error);
+    })
+);
 ```
+
 #### Simple where clause
+
 ```javascript
 jsonDatabase
     .table('user')
@@ -153,51 +169,68 @@ jsonDatabase
         },
     ])
     .get(
-        success = (data) => {
+        (success = (data) => {
             console.warn('onSuccess', data);
-        });
+        })
+    );
 ```
 
-#### Simple where clause with limit
+#### Simple where like clause with limit
+
 ```javascript
 jsonDatabase
     .table('user')
-    .where('first_name', 'like', 'Jane')
+    .where('first_name', 'like', 'Joh')
     .limit(10)
     .orderBy('first_name', 'desc')
     .get(
-        success = (data) => {
-            console.warn('onSuccess', data);
-        });
+        (success = (data) => {
+            console.warn('success', data);
+        })
+    );
 ```
 
 #### Chained where clause
+
 ```javascript
 jsonDatabase
     .table('user')
-    .where('last_name','like','Min')
-    .where('first_name','=','Etan')
+    .where('last_name', 'like', 'Min')
+    .where('first_name', '=', 'Etan')
     .limit(10)
     .orderBy('first_name', 'desc')
     .get(
-        success = (data) => {
-            console.warn('onSuccess', data);
-        });
+        (success = (data) => {
+            console.warn('success', data);
+        })
+    );
 ```
 
 #### Where clause as array
+
 ```javascript
-jsonDatabase.table('user')
+jsonDatabase
+    .table('user')
     .where([
         ['last_name', 'like', 'Min'],
         ['first_name', '=', 'Etan'],
-    ]).get(
-        success = (data) => {
-            console.warn('onSuccess', data);
-        });
+    ])
+    .get(
+        (success = (data) => {
+            console.warn('success', data);
+        })
+    );
 ```
+
+#### Update multiple entries
+
+```javascript
+const updatedUser = jsonDatabase.table('user').where('first_name', 'like', 'John').limit(10).update({ first_name: 'Johny' });
+console.warn(updatedUser);
+```
+
 Get an [overview](./methods.md) to all functions and parameters
 
-* * *
+---
 
 &copy; 2022 Sebastian Klaus
