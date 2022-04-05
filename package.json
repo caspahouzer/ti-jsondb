@@ -1,6 +1,6 @@
 {
     "name": "@caspahouzer/ti-jsondb",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "A file based JSON database for TiDev Titanium",
     "main": "index.js",
     "scripts": {
@@ -31,10 +31,6 @@
         "url": "https://github.com/caspahouzer/ti-jsondb/issues"
     },
     "homepage": "https://github.com/caspahouzer/ti-jsondb#readme",
-    "dependencies": {
-        "compress-json": "^2.0.1",
-        "zipson": "^0.2.12"
-    },
     "devDependencies": {
         "jsdoc-to-markdown": "^7.1.1"
     }
