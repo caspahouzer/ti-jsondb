@@ -98,7 +98,7 @@ jsonDatabase
     .orderBy('name', 'ASC')
     .get()
     .forEach((entry) => {
-        // console.warn('entry', entry);
+        console.warn('entry', entry);
     });
 ```
 
@@ -225,8 +225,24 @@ jsonDatabase
 #### Update multiple entries
 
 ```javascript
-const updatedUser = jsonDatabase.table('user').where('first_name', 'like', 'John').limit(10).update({ first_name: 'Johny' });
-console.warn(updatedUser);
+jsonDatabase.table('user')
+    .where('first_name', 'like', 'John')
+    .limit(10)
+    .update({ first_name: 'Johny' },
+    success = (counter){
+        console.log('Updated '+counter+' entries')
+    });
+```
+
+#### Delete entries
+
+```javascript
+jsonDatabase.table('user')
+    .where('first_name', 'like', 'John')
+    .delete(
+    success = (counter){
+        console.log('Deleted '+counter+' entries')
+    });
 ```
 
 Get an [overview](./methods.md) to all functions and parameters

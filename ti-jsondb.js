@@ -258,10 +258,11 @@ export default class TiJsonDB {
 
     /**
      * Delete entries
+     * Returns the number of deleted entries
      * 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns {Boolean}
+     * @returns {Number}
      */
     delete(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -279,8 +280,8 @@ export default class TiJsonDB {
         // Get the difference between all entries and filtered entries
         const difference = allEntries.filter(x => !filteredEntries.includes(x));
 
+        let deleteCounter = allEntries.length - difference.length;
         if (this.debug) {
-            let deleteCounter = allEntries.length - difference.length;
             console.log('DEBUG ti-jsondb - Deleted ' + deleteCounter + ' entries');
         }
 
@@ -288,10 +289,10 @@ export default class TiJsonDB {
 
         if (this._persist()) {
             if (onSuccess instanceof Function) {
-                onSuccess(difference);
+                onSuccess(deleteCounter);
                 return;
             }
-            return true;
+            return deleteCounter;
         }
         if (onError instanceof Function) {
             onError({error: 'Could not delete objects from table "' + this.query.table + '"'});
@@ -302,6 +303,7 @@ export default class TiJsonDB {
 
     /**
      * Update entries
+     * Returns the number of updated entries
      * 
      * @param {*} tableData 
      * @param {*} onSuccess
@@ -334,10 +336,10 @@ export default class TiJsonDB {
             }
             if (this._persist()) {
                 if (onSuccess instanceof Function) {
-                    onSuccess(this.entries);
+                    onSuccess(updateCounter);
                     return;
                 }
-                return this.entries;
+                return updateCounter;
             }
             throw new Error('ti-jsondb - Update: Error while persisting data');
         }
@@ -354,7 +356,7 @@ export default class TiJsonDB {
      * @param {*} tableData 
      * @param {*} onSuccess 
      * @param {*} onError 
-     * @returns {Array}
+     * @returns {Number}
      */
     populate(tableData, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -367,11 +369,12 @@ export default class TiJsonDB {
 
     /**
      * Insert data into table
+     * Returns number of inserted entries
      * 
      * @param {*} tableData 
      * @param {*} onSuccess
      * @param {*} onError
-     * @returns {Array} 
+     * @returns {Number} 
      */
     insert(tableData, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -410,11 +413,11 @@ export default class TiJsonDB {
                 }
             }
             if (onSuccess instanceof Function) {
-                onSuccess(tableData);
+                onSuccess(this.entries.length);
                 return;
             }
 
-            return tableData;
+            return this.entries.length;
         }
         if (onError instanceof Function) {
             onError({error: 'Could not write objects to table "' + this.query.table + '"'});

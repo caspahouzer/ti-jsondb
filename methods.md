@@ -13,10 +13,10 @@ JSON Database functions overview
         * [.destroy(onSuccess, onError)](#module_TiJsonDB--table+destroy) ⇒ <code>Boolean</code>
         * [.truncate(onSuccess, onError)](#module_TiJsonDB--table+truncate) ⇒ <code>Boolean</code>
         * [.lastItem(onSuccess, onError)](#module_TiJsonDB--table+lastItem) ⇒ <code>Object</code>
-        * [.delete(onSuccess, onError)](#module_TiJsonDB--table+delete) ⇒ <code>Boolean</code>
+        * [.delete(onSuccess, onError)](#module_TiJsonDB--table+delete) ⇒ <code>Number</code>
         * [.update(tableData, onSuccess, onError)](#module_TiJsonDB--table+update) ⇒ <code>Array</code>
-        * [.populate(tableData, onSuccess, onError)](#module_TiJsonDB--table+populate) ⇒ <code>Array</code>
-        * [.insert(tableData, onSuccess, onError)](#module_TiJsonDB--table+insert) ⇒ <code>Array</code>
+        * [.populate(tableData, onSuccess, onError)](#module_TiJsonDB--table+populate) ⇒ <code>Number</code>
+        * [.insert(tableData, onSuccess, onError)](#module_TiJsonDB--table+insert) ⇒ <code>Number</code>
         * [.get(onSuccess, onError)](#module_TiJsonDB--table+get) ⇒ <code>Array</code>
         * [.getById(id)](#module_TiJsonDB--table+getById) ⇒ <code>Object</code>
         * [.getSingle(field, value)](#module_TiJsonDB--table+getSingle) ⇒ <code>Object</code>
@@ -116,8 +116,9 @@ Return last item
 
 <a name="module_TiJsonDB--table+delete"></a>
 
-#### table.delete(onSuccess, onError) ⇒ <code>Boolean</code>
+#### table.delete(onSuccess, onError) ⇒ <code>Number</code>
 Delete entries
+Returns the number of deleted entries
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
 
@@ -130,6 +131,7 @@ Delete entries
 
 #### table.update(tableData, onSuccess, onError) ⇒ <code>Array</code>
 Update entries
+Returns the number of updated entries
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
 
@@ -141,7 +143,7 @@ Update entries
 
 <a name="module_TiJsonDB--table+populate"></a>
 
-#### table.populate(tableData, onSuccess, onError) ⇒ <code>Array</code>
+#### table.populate(tableData, onSuccess, onError) ⇒ <code>Number</code>
 Replace all data in table
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
@@ -154,8 +156,9 @@ Replace all data in table
 
 <a name="module_TiJsonDB--table+insert"></a>
 
-#### table.insert(tableData, onSuccess, onError) ⇒ <code>Array</code>
+#### table.insert(tableData, onSuccess, onError) ⇒ <code>Number</code>
 Insert data into table
+Returns number of inserted entries
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
 
