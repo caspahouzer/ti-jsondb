@@ -52,7 +52,7 @@ export default class TiJsonDB {
         this.startTime = new Date().getTime();
 
         // Reset entries
-        this.entries = [];
+        this.entries = null;
 
         // Reset query and conditions
         this.query = {};
@@ -380,6 +380,10 @@ export default class TiJsonDB {
 
         if (!tableData) {
             throw new Error('ti-jsondb - Insert: No data to insert');
+        }
+
+        if (!this.entries) {
+            this.entries = [];
         }
 
         if (tableData instanceof Array) {
