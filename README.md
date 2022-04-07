@@ -50,7 +50,7 @@ jsonDatabase.table('settings').truncate();
 settings = jsonDatabase.table('settings').insert({ id: 'settings', setting1: true, setting2: false, setting3: 'test' });
 
 // get all entries
-settings = jsonDatabase.table('settings').getById('settings');
+settings = jsonDatabase.table('settings').find('settings');
 console.warn('settings', settings);
 ```
 
@@ -105,6 +105,23 @@ jsonDatabase
     });
 ```
 
+#### Select fields to return in object
+
+```javascript
+jsonDatabase
+    .table('user')
+    .select('first_name, last_name')
+    .orderBy('first_name', 'desc')
+    .limit(10)
+    .get((data) => {
+        if (data.length > 0) {
+            console.warn('success select', data);
+            return;
+        }
+        console.warn('no entries found');
+    });
+```
+
 #### Delete item by id
 
 ```javascript
@@ -140,7 +157,7 @@ jsonDatabase
 #### Fetch a single item by id
 
 ```javascript
-const singleUser = jsonDatabase.table('user').getById('d6c52967-9654-4152-80f8-8fbc5a1e33d6');
+const singleUser = jsonDatabase.table('user').find('d6c52967-9654-4152-80f8-8fbc5a1e33d6');
 console.warn('singleUser', singleUser);
 ```
 
