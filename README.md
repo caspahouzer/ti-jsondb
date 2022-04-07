@@ -21,7 +21,10 @@ import TiJsonDB from '@caspahouzer/ti-jsondb';
 import TiJsonDB from 'ti-jsondb';
 
 const jsonDatabase = new TiJsonDB({
+    // Show debug information
     debug: true,
+    // Handle where clause case sensitive
+    caseSensitive: false,
 });
 ```
 
@@ -218,6 +221,23 @@ jsonDatabase
     .get(
         (success = (data) => {
             console.warn('success', data);
+        })
+    );
+```
+
+#### orWhere clause
+
+The orWhere clause has be set **after** where _where_ clause and can be handled like the _where_. Give an array to handle multiple _AND_
+
+```javascript
+jsonDatabase
+    .table('user')
+    .where('first_name', 'like', 'Ja')
+    .orWhere('last_name', '=', 'Doe')
+    .orderBy('first_name')
+    .get(
+        (success = (data) => {
+            console.warn('success where array and chained orWhere', data);
         })
     );
 ```
