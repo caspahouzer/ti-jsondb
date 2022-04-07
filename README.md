@@ -105,6 +105,23 @@ jsonDatabase
     });
 ```
 
+#### Select fields to return in object
+
+```javascript
+jsonDatabase
+    .table('user')
+    .select('first_name, last_name')
+    .orderBy('first_name', 'desc')
+    .limit(10)
+    .get((data) => {
+        if (data.length > 0) {
+            console.warn('success select', data);
+            return;
+        }
+        console.warn('no entries found');
+    });
+```
+
 #### Delete item by id
 
 ```javascript

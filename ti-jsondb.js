@@ -74,6 +74,26 @@ export default class TiJsonDB {
     }
 
     /**
+     * Select fields to fetch from objects
+     * Use * to select all fields
+     * 
+     * @param {string} fields Comma separated list of fields to select
+     * @returns {TiJsonDB}
+     */
+    select(fields = '*') {
+        if (!this.query.table) {
+            throw new Error('ti-jsondb - select: No table given');
+        }
+
+        if (fields === '*') {
+            return this;
+        }
+
+        this.query.fields = fields.split(',');
+        return this;
+    }
+
+    /**
      * Simple where clause chained with AND
      * 
      * @param {string} field
@@ -417,17 +437,29 @@ export default class TiJsonDB {
         }
 
         if (!this.entries) {
-            this.entries = [];
+            this.entries = this.get();
         }
 
         if (tableData instanceof Array) {
             _.each(tableData, (entry, i) => {
+
+                if (tableData[i].id) {
+                    if (_.findWhere(this.entries, {id: tableData[i].id})) {
+                        throw new Error('ti-jsondb - Insert: ID "' + tableData[i].id + '" already exists');
+                    }
+                }
+
                 if (!tableData[i].id) {
                     tableData[i].id = this._generateId();
                 }
             });
             this.entries = this.entries.concat(tableData);
         } else {
+            if (tableData.id) {
+                if (_.findWhere(this.entries, {id: tableData.id})) {
+                    throw new Error('ti-jsondb - Insert: ID "' + tableData.id + '" already exists');
+                }
+            }
             if (!tableData.id) {
                 tableData.id = this._generateId();
             }
@@ -526,6 +558,24 @@ export default class TiJsonDB {
             if (this.debug) {
                 const endTime = new Date().getTime() - this.startTime;
                 console.log('DEBUG ti-jsondb - Get "' + this.query.table + '" after ' + endTime + 'ms');
+            }
+
+            /**
+             * new fields to return
+             */
+            if (this.query.fields) {
+                this.entries = _.map(this.entries, (entry) => {
+                    const newEntry = {
+                        id: entry.id
+                    };
+                    _.each(this.query.fields, (field) => {
+                        field = this._trim(field);
+                        if (entry[field]) {
+                            newEntry[field] = entry[field];
+                        }
+                    });
+                    return newEntry;
+                });
             }
 
             if (onSuccess instanceof Function) {
@@ -832,7 +882,7 @@ export default class TiJsonDB {
      * Clean string from special chars
      * 
      * @private
-     * @param {*} value 
+     * @param {string} value 
      * @returns {string}
      */
     _cleanString(value) {
@@ -848,5 +898,20 @@ export default class TiJsonDB {
         } catch (e) {
             return value;
         }
+    }
+
+    /**
+     * trim string
+     * 
+     * @private
+     * @param {string} value 
+     * @returns {string}
+     */
+    _trim(value) {
+        if (value === undefined) {
+            return '';
+        }
+        value = value || '';
+        return value.replace(/^\s+|\s+$/g, '');
     }
 }
