@@ -48,7 +48,7 @@ Simple where clause chained with AND
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| field | <code>mixed</code> |  | String || Array |
+| field | <code>string</code> |  |  |
 | operator | <code>string</code> | <code>&quot;&#x3D;&quot;</code> | '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between' |
 | value | <code>mixed</code> |  |  |
 
@@ -62,7 +62,7 @@ Functionality is the same as where and can only be chained after where
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| field | <code>mixed</code> |  | String || Array |
+| field | <code>string</code> |  |  |
 | operator | <code>string</code> | <code>&quot;&#x3D;&quot;</code> | '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between' |
 | value | <code>mixed</code> |  |  |
 

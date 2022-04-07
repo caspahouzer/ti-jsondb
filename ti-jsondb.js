@@ -76,7 +76,7 @@ export default class TiJsonDB {
     /**
      * Simple where clause chained with AND
      * 
-     * @param {mixed} field String || Array
+     * @param {string} field
      * @param {string} operator '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
      * @param {mixed} value
      * @returns {TiJsonDb}
@@ -92,22 +92,11 @@ export default class TiJsonDB {
 
         this.query.conditions.where = this.query.conditions.where || [];
 
-        if (field instanceof Array) {
-            _.each(field, (n) => {
-                console.log(n);
-                this.query.conditions.where.push({
-                    field: n[0],
-                    operator: n[1],
-                    value: n[2]
-                });
-            });
-        } else {
-            this.query.conditions.where.push({
-                field: field,
-                operator: operator,
-                value: value
-            });
-        }
+        this.query.conditions.where.push({
+            field: field,
+            operator: operator,
+            value: value
+        });
 
         return this;
     }
@@ -116,7 +105,7 @@ export default class TiJsonDB {
      * Or where clause
      * Functionality is the same as where and can only be chained after where
      * 
-     * @param {mixed} field  String || Array
+     * @param {string} field
      * @param {string} operator  '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
      * @param {mixed} value 
      * @returns {TiJsonDb}
@@ -136,22 +125,11 @@ export default class TiJsonDB {
 
         this.query.conditions.orWhere = this.query.conditions.orWhere || [];
 
-        if (field instanceof Array) {
-            _.each(field, (n) => {
-                console.log(n);
-                this.query.conditions.orWhere.push({
-                    field: n[0],
-                    operator: n[1],
-                    value: n[2]
-                });
-            });
-        } else {
-            this.query.conditions.orWhere.push({
-                field: field,
-                operator: operator,
-                value: value
-            });
-        }
+        this.query.conditions.orWhere.push({
+            field: field,
+            operator: operator,
+            value: value
+        });
 
         return this;
     }
@@ -360,6 +338,10 @@ export default class TiJsonDB {
             throw new Error('ti-jsondb - Update: No table selected');
         }
 
+        if (!tableData instanceof Object) {
+            throw new Error('ti-jsondb - Update: No object provided');
+        }
+
         // Get all entries from conditions
         this.get();
 
@@ -428,6 +410,10 @@ export default class TiJsonDB {
 
         if (!tableData) {
             throw new Error('ti-jsondb - Insert: No data to insert');
+        }
+
+        if (!tableData instanceof Object && !tableData instanceof Array) {
+            throw new Error('ti-jsondb - Insert: Wrong data type provided');
         }
 
         if (!this.entries) {
@@ -515,7 +501,6 @@ export default class TiJsonDB {
                         this._orWhere();
                     }
                 }
-                console.warn('this.entries.length', this.entries.length);
 
                 /**
                  * OrderBy
@@ -678,11 +663,8 @@ export default class TiJsonDB {
             if (this.query.conditions.orWhere.length > 0) {
 
                 const jsonDatabase = new TiJsonDB();
-                console.warn('');
-                console.warn('new jsondb');
 
                 let conditions = [];
-                console.warn(this.query.conditions.orWhere);
                 _.each(this.query.conditions.orWhere, (condition) => {
                     conditions.push([condition.field, condition.operator, condition.value]);
                 });
@@ -690,7 +672,7 @@ export default class TiJsonDB {
                 this.entries = _.union(this.entries, jsonDatabase.table(this.query.table).where(conditions).get());
 
                 // reset orWhere conditions
-                this.query.conditions.orWhere = [];
+                this.query.conditions.orWhere = null;
 
                 return this;
             }
@@ -720,10 +702,18 @@ export default class TiJsonDB {
                             }
                             switch (operator) {
                                 case '=':
-                                    return entry[field].toLowerCase() === value.toLowerCase();
+                                    if (this.caseSensitive) {
+                                        return entry[field] === value;
+                                    } else {
+                                        return entry[field].toLowerCase() === value.toLowerCase();
+                                    }
                                 case '!=':
                                 case '<>':
-                                    return entry[field].toLowerCase() !== value.toLowerCase();
+                                    if (this.caseSensitive) {
+                                        return entry[field] !== value;
+                                    } else {
+                                        return entry[field].toLowerCase() !== value.toLowerCase();
+                                    }
                                 case '>':
                                     return entry[field] > value;
                                 case '<':

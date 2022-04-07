@@ -124,14 +124,14 @@ jsonDatabase
     .table('user')
     .orderBy('first_name', 'rand')
     .get(
-        (success = (data) => {
+        (data) => {
             if (data.length > 0) {
                 console.warn('success', data[0]);
                 return;
             }
             console.warn('no entries found');
         }),
-        (error = (error) => {
+        (error) => {
             console.warn('error', error);
         })
     );
@@ -150,12 +150,12 @@ console.warn('singleUser', singleUser);
 jsonDatabase.table('user').getSingle(
     'first_name',
     'Jane',
-    (success = (data) => {
+    (data) => {
         console.warn('success getSingle', data);
-    }),
-    (error = (error) => {
+    },
+    (error) => {
         console.warn('error getSingle', error);
-    })
+    }
 );
 ```
 
@@ -164,18 +164,10 @@ jsonDatabase.table('user').getSingle(
 ```javascript
 jsonDatabase
     .table('user')
-    .where([
-        {
-            field: 'first_name',
-            operator: '=',
-            value: 'Jane',
-        },
-    ])
-    .get(
-        (success = (data) => {
-            console.warn('onSuccess', data);
-        })
-    );
+    .where('first_name', '=', 'Jane')
+    .get((data) => {
+        console.warn('success simple where', data);
+    });
 ```
 
 #### Simple where like clause with limit
@@ -186,11 +178,9 @@ jsonDatabase
     .where('first_name', 'like', 'Joh')
     .limit(10)
     .orderBy('first_name', 'desc')
-    .get(
-        (success = (data) => {
-            console.warn('success', data);
-        })
-    );
+    .get((data) => {
+        console.warn('success simple where with limit', data);
+    });
 ```
 
 #### Chained where clause
@@ -202,32 +192,14 @@ jsonDatabase
     .where('first_name', '=', 'Etan')
     .limit(10)
     .orderBy('first_name', 'desc')
-    .get(
-        (success = (data) => {
-            console.warn('success', data);
-        })
-    );
-```
-
-#### Where clause as array
-
-```javascript
-jsonDatabase
-    .table('user')
-    .where([
-        ['last_name', 'like', 'Min'],
-        ['first_name', '=', 'Etan'],
-    ])
-    .get(
-        (success = (data) => {
-            console.warn('success', data);
-        })
-    );
+    .get((data) => {
+        console.warn('success chained where clause', data);
+    });
 ```
 
 #### orWhere clause
 
-The orWhere clause has be set **after** where _where_ clause and can be handled like the _where_. Give an array to handle multiple _AND_
+The orWhere clause has be set **after** _where_ clause and can be used like the _where_ function. Give an array to handle multiple wheres which are combined with _AND_
 
 ```javascript
 jsonDatabase
@@ -235,11 +207,9 @@ jsonDatabase
     .where('first_name', 'like', 'Ja')
     .orWhere('last_name', '=', 'Doe')
     .orderBy('first_name')
-    .get(
-        (success = (data) => {
-            console.warn('success where array and chained orWhere', data);
-        })
-    );
+    .get((data) => {
+        console.warn('success where array and chained orWhere', data);
+    });
 ```
 
 #### Update multiple entries
