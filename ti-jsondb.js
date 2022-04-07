@@ -253,7 +253,7 @@ export default class TiJsonDB {
      * 
      * @param {function} onSuccess
      * @param {function} onError
-     * @returns {Object} || function
+     * @returns {object} || function
      */
     lastItem(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -548,7 +548,7 @@ export default class TiJsonDB {
      * Fetch single entry by id
      * 
      * @param {string} id 
-     * @returns {Object}
+     * @returns {object}
      */
     getById(id) {
         if (!id) {
@@ -559,11 +559,21 @@ export default class TiJsonDB {
     }
 
     /**
+     * Find entry by id
+     * 
+     * @param {string} id 
+     * @returns {object}
+     */
+    find(id) {
+        return this.getById(id);
+    }
+
+    /**
      * Returns the first found element
      * 
      * @param {string} field 
      * @param {mixed} value 
-     * @returns {Object}
+     * @returns {object}
      */
     getSingle(field, value, onSuccess = null, onError = null) {
         if (!this.query.table) {

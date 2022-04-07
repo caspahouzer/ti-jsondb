@@ -13,14 +13,15 @@ JSON Database functions overview
         * [.limit(limit, offset)](#module_TiJsonDB--table+limit) ⇒ <code>TiJsonDb</code>
         * [.destroy(onSuccess, onError)](#module_TiJsonDB--table+destroy) ⇒ <code>boolean</code>
         * [.truncate(onSuccess, onError)](#module_TiJsonDB--table+truncate) ⇒ <code>boolean</code>
-        * [.lastItem(onSuccess, onError)](#module_TiJsonDB--table+lastItem) ⇒ <code>Object</code>
+        * [.lastItem(onSuccess, onError)](#module_TiJsonDB--table+lastItem) ⇒ <code>object</code>
         * [.delete(onSuccess, onError)](#module_TiJsonDB--table+delete) ⇒ <code>number</code>
         * [.update(tableData, onSuccess, onError)](#module_TiJsonDB--table+update) ⇒ <code>array</code>
         * [.populate(tableData, onSuccess, onError)](#module_TiJsonDB--table+populate) ⇒ <code>number</code>
         * [.insert(tableData, onSuccess, onError)](#module_TiJsonDB--table+insert) ⇒ <code>number</code>
         * [.get(onSuccess, onError)](#module_TiJsonDB--table+get) ⇒ <code>array</code>
-        * [.getById(id)](#module_TiJsonDB--table+getById) ⇒ <code>Object</code>
-        * [.getSingle(field, value)](#module_TiJsonDB--table+getSingle) ⇒ <code>Object</code>
+        * [.getById(id)](#module_TiJsonDB--table+getById) ⇒ <code>object</code>
+        * [.find(id)](#module_TiJsonDB--table+find) ⇒ <code>object</code>
+        * [.getSingle(field, value)](#module_TiJsonDB--table+getSingle) ⇒ <code>object</code>
 
 <a name="exp_module_TiJsonDB--table"></a>
 
@@ -118,11 +119,11 @@ Truncate table
 
 <a name="module_TiJsonDB--table+lastItem"></a>
 
-#### table.lastItem(onSuccess, onError) ⇒ <code>Object</code>
+#### table.lastItem(onSuccess, onError) ⇒ <code>object</code>
 Return last item
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-**Returns**: <code>Object</code> - || function  
+**Returns**: <code>object</code> - || function  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -197,8 +198,19 @@ Fetch data from table
 
 <a name="module_TiJsonDB--table+getById"></a>
 
-#### table.getById(id) ⇒ <code>Object</code>
+#### table.getById(id) ⇒ <code>object</code>
 Fetch single entry by id
+
+**Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
+
+| Param | Type |
+| --- | --- |
+| id | <code>string</code> | 
+
+<a name="module_TiJsonDB--table+find"></a>
+
+#### table.find(id) ⇒ <code>object</code>
+Find entry by id
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
 
@@ -208,7 +220,7 @@ Fetch single entry by id
 
 <a name="module_TiJsonDB--table+getSingle"></a>
 
-#### table.getSingle(field, value) ⇒ <code>Object</code>
+#### table.getSingle(field, value) ⇒ <code>object</code>
 Returns the first found element
 
 **Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
