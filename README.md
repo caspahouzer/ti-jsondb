@@ -21,7 +21,10 @@ import TiJsonDB from '@caspahouzer/ti-jsondb';
 import TiJsonDB from 'ti-jsondb';
 
 const jsonDatabase = new TiJsonDB({
+    // Show debug information
     debug: true,
+    // Handle where clause case sensitive
+    caseSensitive: false,
 });
 ```
 
@@ -98,7 +101,7 @@ jsonDatabase
     .orderBy('name', 'ASC')
     .get()
     .forEach((entry) => {
-        // console.warn('entry', entry);
+        console.warn('entry', entry);
     });
 ```
 
@@ -222,11 +225,44 @@ jsonDatabase
     );
 ```
 
+#### orWhere clause
+
+The orWhere clause has be set **after** where _where_ clause and can be handled like the _where_. Give an array to handle multiple _AND_
+
+```javascript
+jsonDatabase
+    .table('user')
+    .where('first_name', 'like', 'Ja')
+    .orWhere('last_name', '=', 'Doe')
+    .orderBy('first_name')
+    .get(
+        (success = (data) => {
+            console.warn('success where array and chained orWhere', data);
+        })
+    );
+```
+
 #### Update multiple entries
 
 ```javascript
-const updatedUser = jsonDatabase.table('user').where('first_name', 'like', 'John').limit(10).update({ first_name: 'Johny' });
-console.warn(updatedUser);
+jsonDatabase.table('user')
+    .where('first_name', 'like', 'John')
+    .limit(10)
+    .update({ first_name: 'Johny' },
+    success = (counter){
+        console.log('Updated '+counter+' entries')
+    });
+```
+
+#### Delete entries
+
+```javascript
+jsonDatabase.table('user')
+    .where('first_name', 'like', 'John')
+    .delete(
+    success = (counter){
+        console.log('Deleted '+counter+' entries')
+    });
 ```
 
 Get an [overview](./methods.md) to all functions and parameters

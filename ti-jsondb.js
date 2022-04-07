@@ -11,6 +11,7 @@ export default class TiJsonDB {
      * @param {object} options
      * {
      *  debug: true || false,
+     *  caseSensitive: true || false,
      * } 
      * 
      * @alias module:constructor
@@ -18,6 +19,7 @@ export default class TiJsonDB {
      */
     constructor(options = {}) {
         this.debug = options.debug || false;
+        this.caseSensitive = options.caseSensitive || false;
 
         this.query = {};
         this.query.conditions = {};
@@ -41,7 +43,7 @@ export default class TiJsonDB {
      * Set actual table to fetch from
      * 
      * @alias module:TiJsonDB
-     * @param {*} name 
+     * @param {string} name 
      * @returns {TiJsonDB}
      */
     table(name) {
@@ -74,9 +76,9 @@ export default class TiJsonDB {
     /**
      * Simple where clause chained with AND
      * 
-     * @param field {mixed} String || Array
-     * @param operator {String} '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
-     * @param value {mixed}
+     * @param {mixed} field String || Array
+     * @param {string} operator '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
+     * @param {mixed} value
      * @returns {TiJsonDb}
      */
     where(field, operator = '=', value) {
@@ -111,10 +113,53 @@ export default class TiJsonDB {
     }
 
     /**
+     * Or where clause
+     * Functionality is the same as where and can only be chained after where
+     * 
+     * @param {mixed} field  String || Array
+     * @param {string} operator  '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
+     * @param {mixed} value 
+     * @returns {TiJsonDb}
+     */
+    orWhere(field, operator = '=', value) {
+        if (!this.query.conditions.where) {
+            throw new Error('ti-jsondb - orWhere: Can only be used after where');
+        }
+
+        if (!this.query.table) {
+            throw new Error('ti-jsondb - orWhere: No table selected');
+        }
+
+        if (operator === 'between' && !value instanceof Array) {
+            throw new Error('ti-jsondb - orWhere: Value for between operator on field "' + field + '" must be an array with numbers');
+        }
+
+        this.query.conditions.orWhere = this.query.conditions.orWhere || [];
+
+        if (field instanceof Array) {
+            _.each(field, (n) => {
+                console.log(n);
+                this.query.conditions.orWhere.push({
+                    field: n[0],
+                    operator: n[1],
+                    value: n[2]
+                });
+            });
+        } else {
+            this.query.conditions.orWhere.push({
+                field: field,
+                operator: operator,
+                value: value
+            });
+        }
+
+        return this;
+    }
+    /**
      * Order by field
      * 
-     * @param {*} key 
-     * @param {*} order  'asc' || 'desc' || 'rand'  
+     * @param {string} key 
+     * @param {string} order  'asc' || 'desc' || 'rand'  
      * @returns {TiJsonDb}
      */
     orderBy(key, order = 'asc') {
@@ -162,9 +207,9 @@ export default class TiJsonDB {
      * 
      * This function REALLY deletes the whole table
      * 
-     * @param {*} onSuccess
-     * @param {*} onError
-     * @returns {Boolean}
+     * @param {function} onSuccess
+     * @param {function} onError
+     * @returns {boolean}
      */
     destroy(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -197,9 +242,9 @@ export default class TiJsonDB {
     /**
      * Truncate table
      * 
-     * @param {*} onSuccess 
-     * @param {*} onError 
-     * @returns {Boolean}
+     * @param {function} onSuccess 
+     * @param {function} onError 
+     * @returns {boolean}
      */
     truncate(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -228,8 +273,8 @@ export default class TiJsonDB {
     /**
      * Return last item
      * 
-     * @param {*} onSuccess
-     * @param {*} onError
+     * @param {function} onSuccess
+     * @param {function} onError
      * @returns {Object} || function
      */
     lastItem(onSuccess = null, onError = null) {
@@ -258,10 +303,11 @@ export default class TiJsonDB {
 
     /**
      * Delete entries
+     * Returns the number of deleted entries
      * 
-     * @param {*} onSuccess
-     * @param {*} onError
-     * @returns {Boolean}
+     * @param {function} onSuccess
+     * @param {function} onError
+     * @returns {number}
      */
     delete(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -279,8 +325,8 @@ export default class TiJsonDB {
         // Get the difference between all entries and filtered entries
         const difference = allEntries.filter(x => !filteredEntries.includes(x));
 
+        let deleteCounter = allEntries.length - difference.length;
         if (this.debug) {
-            let deleteCounter = allEntries.length - difference.length;
             console.log('DEBUG ti-jsondb - Deleted ' + deleteCounter + ' entries');
         }
 
@@ -288,10 +334,10 @@ export default class TiJsonDB {
 
         if (this._persist()) {
             if (onSuccess instanceof Function) {
-                onSuccess(difference);
+                onSuccess(deleteCounter);
                 return;
             }
-            return true;
+            return deleteCounter;
         }
         if (onError instanceof Function) {
             onError({error: 'Could not delete objects from table "' + this.query.table + '"'});
@@ -302,11 +348,12 @@ export default class TiJsonDB {
 
     /**
      * Update entries
+     * Returns the number of updated entries
      * 
-     * @param {*} tableData 
-     * @param {*} onSuccess
-     * @param {*} onError
-     * @returns {Array}
+     * @param {object} tableData 
+     * @param {function} onSuccess
+     * @param {function} onError
+     * @returns {array}
      */
     update(tableData = {}, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -334,10 +381,10 @@ export default class TiJsonDB {
             }
             if (this._persist()) {
                 if (onSuccess instanceof Function) {
-                    onSuccess(this.entries);
+                    onSuccess(updateCounter);
                     return;
                 }
-                return this.entries;
+                return updateCounter;
             }
             throw new Error('ti-jsondb - Update: Error while persisting data');
         }
@@ -351,10 +398,10 @@ export default class TiJsonDB {
     /**
      * Replace all data in table
      * 
-     * @param {*} tableData 
-     * @param {*} onSuccess 
-     * @param {*} onError 
-     * @returns {Array}
+     * @param {array} tableData 
+     * @param {function} onSuccess 
+     * @param {function} onError 
+     * @returns {number}
      */
     populate(tableData, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -367,11 +414,12 @@ export default class TiJsonDB {
 
     /**
      * Insert data into table
+     * Returns number of inserted entries
      * 
-     * @param {*} tableData 
-     * @param {*} onSuccess
-     * @param {*} onError
-     * @returns {Array} 
+     * @param {mixed} tableData Array or Object
+     * @param {function} onSuccess
+     * @param {function} onError
+     * @returns {number} 
      */
     insert(tableData, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -410,11 +458,11 @@ export default class TiJsonDB {
                 }
             }
             if (onSuccess instanceof Function) {
-                onSuccess(tableData);
+                onSuccess(this.entries.length);
                 return;
             }
 
-            return tableData;
+            return this.entries.length;
         }
         if (onError instanceof Function) {
             onError({error: 'Could not write objects to table "' + this.query.table + '"'});
@@ -426,9 +474,9 @@ export default class TiJsonDB {
     /**
      * Fetch data from table
      * 
-     * @param {*} onSuccess
-     * @param {*} onError
-     * @returns {Array}
+     * @param {function} onSuccess
+     * @param {function} onError
+     * @returns {array}
      */
     get(onSuccess = null, onError = null) {
 
@@ -457,6 +505,19 @@ export default class TiJsonDB {
                 }
 
                 /**
+                 * OrWhere
+                 */
+                if (this.query.conditions.orWhere) {
+                    if (this.query.conditions.orWhere.length > 0) {
+                        if (this.debug) {
+                            console.log('DEBUG ti-jsondb - Get: Conditions OrWhere', this.query.conditions.where);
+                        }
+                        this._orWhere();
+                    }
+                }
+                console.warn('this.entries.length', this.entries.length);
+
+                /**
                  * OrderBy
                  */
                 if (this.query.conditions.orderBy) {
@@ -475,7 +536,6 @@ export default class TiJsonDB {
                     }
                     this._limit();
                 }
-
             }
 
             if (this.debug) {
@@ -592,7 +652,7 @@ export default class TiJsonDB {
      * Reload all existing tables to table -> file mapping
      * 
      * @private
-     * @returns {Boolean}
+     * @returns {boolean}
      */
     get _reloadAllTables() {
         let allTables = this.dbFolderObject.getDirectoryListing();
@@ -608,69 +668,99 @@ export default class TiJsonDB {
     }
 
     /**
+     * Internal orWhere
+     * 
+     * @private
+     * @returns {array}
+     */
+    _orWhere() {
+        if (this.query.conditions.orWhere) {
+            if (this.query.conditions.orWhere.length > 0) {
+
+                const jsonDatabase = new TiJsonDB();
+                console.warn('');
+                console.warn('new jsondb');
+
+                let conditions = [];
+                console.warn(this.query.conditions.orWhere);
+                _.each(this.query.conditions.orWhere, (condition) => {
+                    conditions.push([condition.field, condition.operator, condition.value]);
+                });
+
+                this.entries = _.union(this.entries, jsonDatabase.table(this.query.table).where(conditions).get());
+
+                // reset orWhere conditions
+                this.query.conditions.orWhere = [];
+
+                return this;
+            }
+        }
+        throw new Error('ti-jsondb - OrWhere: No conditions provided');
+    }
+
+    /**
      * Internal where
      * 
      * @private
-     * @returns {Array}
+     * @returns {array}
      */
     _where() {
         if (this.query.conditions.where) {
             if (this.query.conditions.where.length > 0) {
 
-                if (this.allTables[this.query.table]) {
-                    if (this.entries) {
-                        _.each(this.query.conditions.where, (where) => {
-                            let field = where.field;
-                            let value = where.value;
-                            let operator = where.operator || '=';
-                            this.entries = _.filter(this.entries, (entry) => {
-                                // Check if field is set
-                                if (entry[field] === undefined) {
-                                    return false;
-                                }
-                                switch (operator) {
-                                    case '=':
-                                        return entry[field].toLowerCase() === value.toLowerCase();
-                                    case '!=':
-                                    case '<>':
-                                        return entry[field].toLowerCase() !== value.toLowerCase();
-                                    case '>':
-                                        return entry[field] > value;
-                                    case '<':
-                                        return entry[field] < value;
-                                    case '>=':
-                                        return entry[field] >= value;
-                                    case '<=':
-                                        return entry[field] <= value;
-                                    case 'in':
-                                    case 'like':
-                                        return entry[field].indexOf(value) !== -1;
-                                    case 'not in':
-                                    case 'not like':
-                                        return entry[field].indexOf(value) === -1;
-                                    case 'between':
-                                        if (!value instanceof Array) {
-                                            throw new Error('ti-jsondb - Where: Operator "' + operator + '" needs an array as value');
-                                        }
-                                        return entry[field] >= value[0] && entry[field] <= value[1];
-                                    default:
-                                        throw new Error('ti-jsondb - Where: Operator "' + operator + '" not supported');
-                                }
-                            });
+                if (this.entries instanceof Array) {
+                    _.each(this.query.conditions.where, (where) => {
+                        let field = where.field;
+                        let value = where.value;
+                        let operator = where.operator || '=';
+                        this.entries = _.filter(this.entries, (entry) => {
+                            // Check if field is set
+                            if (entry[field] === undefined) {
+                                return false;
+                            }
+                            switch (operator) {
+                                case '=':
+                                    return entry[field].toLowerCase() === value.toLowerCase();
+                                case '!=':
+                                case '<>':
+                                    return entry[field].toLowerCase() !== value.toLowerCase();
+                                case '>':
+                                    return entry[field] > value;
+                                case '<':
+                                    return entry[field] < value;
+                                case '>=':
+                                    return entry[field] >= value;
+                                case '<=':
+                                    return entry[field] <= value;
+                                case 'in':
+                                case 'like':
+                                    return entry[field].indexOf(value) !== -1;
+                                case 'not in':
+                                case 'not like':
+                                    return entry[field].indexOf(value) === -1;
+                                case 'between':
+                                    if (!value instanceof Array) {
+                                        throw new Error('ti-jsondb - Where: Operator "' + operator + '" needs an array as value');
+                                    }
+                                    return entry[field] >= value[0] && entry[field] <= value[1];
+                                default:
+                                    throw new Error('ti-jsondb - Where: Operator "' + operator + '" not supported. Allowed operators: =, !=, <>, >, <, >=, <=, in, like, not in, not like, between');
+                            }
                         });
-                    }
+                    });
                 }
 
                 return this;
             }
         }
+        throw new Error('ti-jsondb - Where: No conditions provided');
     }
 
     /**
      * Internal orderBy
      * 
      * @private
-     * @returns {Array}
+     * @returns {array}
      */
     _orderBy() {
         if (this.query.conditions.orderBy) {
@@ -694,15 +784,16 @@ export default class TiJsonDB {
                 }
                 return this;
             }
-            throw new Error('ti-jsondb - Sort: Table of objects "' + this.tableName + '" cannot be sorted');
+            throw new Error('ti-jsondb - OrderBy: Table of objects "' + this.tableName + '" cannot be sorted');
         }
+        throw new Error('ti-jsondb - OrderBy: No orderBy provided');
     }
 
     /**
      * Internal limit
      * 
      * @private
-     * @returns {Array}
+     * @returns {array}
      */
     _limit() {
         if (this.query.conditions.limit) {
@@ -715,7 +806,7 @@ export default class TiJsonDB {
      * Persist data to file
      * 
      * @private
-     * @returns {Boolean}
+     * @returns {boolean}
      */
     _persist() {
         if (this.allTables[this.query.table].write(JSON.stringify(this.entries))) {
