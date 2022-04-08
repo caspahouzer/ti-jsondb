@@ -4,3 +4,4 @@ mockup_data/
 *.hbs
 .git
 Gruntfile.js
+.history/
