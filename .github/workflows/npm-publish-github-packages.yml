@@ -6,7 +6,6 @@ name: GitHub Package
 on:
   push:
     branches:
-    - master
     - main
 
 jobs:
