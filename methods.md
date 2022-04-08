@@ -7,9 +7,10 @@ JSON Database functions overview
 * [TiJsonDB](#module_TiJsonDB)
     * [table(name)](#exp_module_TiJsonDB--table) ⇒ <code>TiJsonDB</code> ⏏
         * [.last_insert_id](#module_TiJsonDB--table+last_insert_id) ⇒ <code>string</code>
-        * [.select(fields)](#module_TiJsonDB--table+select) ⇒ <code>TiJsonDB</code>
+        * [.select(fields)](#module_TiJsonDB--table+select) ⇒ <code>TiJsonDb</code>
         * [.where(field, operator, value)](#module_TiJsonDB--table+where) ⇒ <code>TiJsonDb</code>
         * [.orWhere(field, operator, value)](#module_TiJsonDB--table+orWhere) ⇒ <code>TiJsonDb</code>
+        * [.join(table, joinField, operator, onField)](#module_TiJsonDB--table+join) ⇒ <code>TiJsonDb</code>
         * [.orderBy(key, order)](#module_TiJsonDB--table+orderBy) ⇒ <code>TiJsonDb</code>
         * [.limit(limit, offset)](#module_TiJsonDB--table+limit) ⇒ <code>TiJsonDb</code>
         * [.destroy(onSuccess, onError)](#module_TiJsonDB--table+destroy) ⇒ <code>boolean</code>
@@ -43,7 +44,7 @@ Return last item id
 **Kind**: instance property of [<code>table</code>](#exp_module_TiJsonDB--table)  
 <a name="module_TiJsonDB--table+select"></a>
 
-#### table.select(fields) ⇒ <code>TiJsonDB</code>
+#### table.select(fields) ⇒ <code>TiJsonDb</code>
 Select fields to fetch from objects
 Use * to select all fields
 
@@ -79,6 +80,20 @@ Functionality is the same as where and can only be chained after where
 | field | <code>string</code> |  |  |
 | operator | <code>string</code> | <code>&quot;&#x3D;&quot;</code> | '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between' |
 | value | <code>mixed</code> |  |  |
+
+<a name="module_TiJsonDB--table+join"></a>
+
+#### table.join(table, joinField, operator, onField) ⇒ <code>TiJsonDb</code>
+Simple join a table with another by field
+
+**Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| table | <code>string</code> |  |  |
+| joinField | <code>string</code> |  |  |
+| operator | <code>string</code> | <code>&quot;&#x3D;&quot;</code> | '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between' |
+| onField | <code>string</code> |  |  |
 
 <a name="module_TiJsonDB--table+orderBy"></a>
 

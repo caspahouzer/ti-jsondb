@@ -1,14 +1,24 @@
+
+if (!Ti) {
+    const os = require('os'),
+        _ = require('underscore'),
+        path = require('path'),
+        fs = require('fs-extended');
+
+    console.log(os.tmpdir());
+}
+
 /**
- * JSON Database functions overview
- * 
- * @module TiJsonDB
- */
+* JSON Database functions overview
+* 
+* @module TiJsonDB
+*/
 export default class TiJsonDB {
 
     /**
      * TiJsonDB constructor
      * 
-     * @param {object} options
+     * @param {Object} options
      * {
      *  debug: true || false,
      *  caseSensitive: true || false,
@@ -21,29 +31,45 @@ export default class TiJsonDB {
         this.debug = options.debug || false;
         this.caseSensitive = options.caseSensitive || false;
 
+        this.allTables = {};
+
         this.query = {};
         this.query.conditions = {};
         this.entries;
 
-        this.dbPath = Ti.Filesystem.applicationDataDirectory + 'tijsondb/';
-        console.log(this.dbPath)
-        this.dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
-        this.allTables = {};
-        if (!this.dbFolderObject.exists()) {
-            if (!this.dbFolderObject.createDirectory(true)) {
-                throw new Error('ti-jsondb - Could not create directory tijsondb');
-            }
-        }
+        this.dbPath = this._dbPath();
+
+        this.dbFolderObject = this._directoryObject();
 
         this._reloadAllTables;
         return this;
+    }
+
+    _directoryObject() {
+        // Ti 
+        if (Ti) {
+            const dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
+            if (!dbFolderObject.exists()) {
+                if (!dbFolderObject.createDirectory(true)) {
+                    throw new Error('ti-jsondb - Could not create directory tijsondb');
+                }
+            }
+            return dbFolderObject;
+        }
+
+        // Node
+        if (!fs.existsSync(this.dbPath)) {
+            if (!fs.mkdirSync(this.dbPath)) {
+                throw new Error('ti-jsondb - Could not create directory tijsondb with fs');
+            }
+        }
     }
 
     /**
      * Set actual table to fetch from
      * 
      * @alias module:TiJsonDB
-     * @param {string} name 
+     * @param {String} name 
      * @returns {TiJsonDB}
      */
     table(name) {
@@ -77,8 +103,8 @@ export default class TiJsonDB {
      * Select fields to fetch from objects
      * Use * to select all fields
      * 
-     * @param {string} fields Comma separated list of fields to select
-     * @returns {TiJsonDB}
+     * @param {String} fields Comma separated list of fields to select
+     * @returns {TiJsonDb}
      */
     select(fields = '*') {
         if (!this.query.table) {
@@ -90,15 +116,16 @@ export default class TiJsonDB {
         }
 
         this.query.fields = fields.split(',');
+
         return this;
     }
 
     /**
      * Simple where clause chained with AND
      * 
-     * @param {string} field
-     * @param {string} operator '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
-     * @param {mixed} value
+     * @param {String} field
+     * @param {String} operator '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
+     * @param {Mixed} value
      * @returns {TiJsonDb}
      */
     where(field, operator = '=', value) {
@@ -125,9 +152,9 @@ export default class TiJsonDB {
      * Or where clause
      * Functionality is the same as where and can only be chained after where
      * 
-     * @param {string} field
-     * @param {string} operator  '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
-     * @param {mixed} value 
+     * @param {String} field
+     * @param {String} operator '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
+     * @param {Mixed} value 
      * @returns {TiJsonDb}
      */
     orWhere(field, operator = '=', value) {
@@ -153,11 +180,38 @@ export default class TiJsonDB {
 
         return this;
     }
+
+    /**
+     * Simple join a table with another by field
+     * 
+     * @param {String} table 
+     * @param {String} joinField 
+     * @param {String} operator '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
+     * @param {String} onField 
+     * @returns {TiJsonDb}
+     */
+    join(table, joinField, operator = '=', onField) {
+        if (!this.query.table) {
+            throw new Error('ti-jsondb - join: No table selected');
+        }
+
+        this.query.conditions.join = this.query.conditions.join || [];
+
+        this.query.conditions.join.push({
+            table: table,
+            joinField: joinField,
+            operator: operator,
+            onField: onField
+        });
+
+        return this;
+    }
+
     /**
      * Order by field
      * 
-     * @param {string} key 
-     * @param {string} order  'asc' || 'desc' || 'rand'  
+     * @param {String} key 
+     * @param {String} order  'asc' || 'desc' || 'rand'  
      * @returns {TiJsonDb}
      */
     orderBy(key, order = 'asc') {
@@ -179,8 +233,8 @@ export default class TiJsonDB {
     /**
      * Limits the result
      * 
-     * @param {number} limit 
-     * @param {number} offset 
+     * @param {Number} limit 
+     * @param {Number} offset 
      * @returns {TiJsonDb}
      */
     limit(limit = null, offset = 0) {
@@ -205,8 +259,8 @@ export default class TiJsonDB {
      * 
      * This function REALLY deletes the whole table
      * 
-     * @param {function} onSuccess
-     * @param {function} onError
+     * @param {Function} onSuccess
+     * @param {Function} onError
      * @returns {boolean}
      */
     destroy(onSuccess = null, onError = null) {
@@ -240,8 +294,8 @@ export default class TiJsonDB {
     /**
      * Truncate table
      * 
-     * @param {function} onSuccess 
-     * @param {function} onError 
+     * @param {Function} onSuccess 
+     * @param {Function} onError 
      * @returns {boolean}
      */
     truncate(onSuccess = null, onError = null) {
@@ -271,9 +325,9 @@ export default class TiJsonDB {
     /**
      * Return last item
      * 
-     * @param {function} onSuccess
-     * @param {function} onError
-     * @returns {object} || function
+     * @param {Function} onSuccess
+     * @param {Function} onError
+     * @returns {Object} || function
      */
     lastItem(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -303,9 +357,9 @@ export default class TiJsonDB {
      * Delete entries
      * Returns the number of deleted entries
      * 
-     * @param {function} onSuccess
-     * @param {function} onError
-     * @returns {number}
+     * @param {Function} onSuccess
+     * @param {Function} onError
+     * @returns {Number}
      */
     delete(onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -348,10 +402,10 @@ export default class TiJsonDB {
      * Update entries
      * Returns the number of updated entries
      * 
-     * @param {object} tableData 
-     * @param {function} onSuccess
-     * @param {function} onError
-     * @returns {array}
+     * @param {Object} tableData 
+     * @param {Function} onSuccess
+     * @param {Function} onError
+     * @returns {Array}
      */
     update(tableData = {}, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -400,10 +454,10 @@ export default class TiJsonDB {
     /**
      * Replace all data in table
      * 
-     * @param {array} tableData 
-     * @param {function} onSuccess 
-     * @param {function} onError 
-     * @returns {number}
+     * @param {Array} tableData 
+     * @param {Function} onSuccess 
+     * @param {Function} onError 
+     * @returns {Number}
      */
     populate(tableData, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -418,10 +472,10 @@ export default class TiJsonDB {
      * Insert data into table
      * Returns number of inserted entries
      * 
-     * @param {mixed} tableData Array or Object
-     * @param {function} onSuccess
-     * @param {function} onError
-     * @returns {number} 
+     * @param {Mixed} tableData Array or Object
+     * @param {Function} onSuccess
+     * @param {Function} onError
+     * @returns {Number} 
      */
     insert(tableData, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -492,9 +546,9 @@ export default class TiJsonDB {
     /**
      * Fetch data from table
      * 
-     * @param {function} onSuccess
-     * @param {function} onError
-     * @returns {array}
+     * @param {Function} onSuccess
+     * @param {Function} onError
+     * @returns {Array}
      */
     get(onSuccess = null, onError = null) {
 
@@ -597,8 +651,8 @@ export default class TiJsonDB {
     /**
      * Fetch single entry by id
      * 
-     * @param {string} id 
-     * @returns {object}
+     * @param {String} id 
+     * @returns {Object}
      */
     getById(id) {
         if (!id) {
@@ -611,8 +665,8 @@ export default class TiJsonDB {
     /**
      * Find entry by id
      * 
-     * @param {string} id 
-     * @returns {object}
+     * @param {String} id 
+     * @returns {Object}
      */
     find(id) {
         return this.getById(id);
@@ -621,9 +675,9 @@ export default class TiJsonDB {
     /**
      * Returns the first found element
      * 
-     * @param {string} field 
-     * @param {mixed} value 
-     * @returns {object}
+     * @param {String} field 
+     * @param {Mixed} value 
+     * @returns {Object}
      */
     getSingle(field, value, onSuccess = null, onError = null) {
         if (!this.query.table) {
@@ -679,7 +733,7 @@ export default class TiJsonDB {
     /**
      * Return last item id
      * 
-     * @returns {string}
+     * @returns {String}
      */
     get last_insert_id() {
         const lastItem = this.lastItem();
@@ -692,6 +746,21 @@ export default class TiJsonDB {
     /**
      * Helper functions
      */
+
+    /**
+     * Returns tmp directory
+     * 
+     * @returns {String}
+     */
+    _dbPath() {
+        if (Ti) {
+            console.log('use Ti');
+            return Ti.Filesystem.applicationDataDirectory + 'tijsondb/';
+        } else {
+            console.log('use node');
+            return os.tmpdir() + 'tijsondb/';
+        }
+    }
 
     /**
      * Reload all existing tables to table -> file mapping
@@ -716,7 +785,7 @@ export default class TiJsonDB {
      * Internal orWhere
      * 
      * @private
-     * @returns {array}
+     * @returns {Array}
      */
     _orWhere() {
         if (this.query.conditions.orWhere) {
@@ -744,7 +813,7 @@ export default class TiJsonDB {
      * Internal where
      * 
      * @private
-     * @returns {array}
+     * @returns {Array}
      */
     _where() {
         if (this.query.conditions.where) {
@@ -810,7 +879,7 @@ export default class TiJsonDB {
      * Internal orderBy
      * 
      * @private
-     * @returns {array}
+     * @returns {Array}
      */
     _orderBy() {
         if (this.query.conditions.orderBy) {
@@ -843,7 +912,7 @@ export default class TiJsonDB {
      * Internal limit
      * 
      * @private
-     * @returns {array}
+     * @returns {Array}
      */
     _limit() {
         if (this.query.conditions.limit) {
@@ -882,8 +951,8 @@ export default class TiJsonDB {
      * Clean string from special chars
      * 
      * @private
-     * @param {string} value 
-     * @returns {string}
+     * @param {String} value 
+     * @returns {String}
      */
     _cleanString(value) {
         if (value === undefined) {
@@ -904,8 +973,8 @@ export default class TiJsonDB {
      * trim string
      * 
      * @private
-     * @param {string} value 
-     * @returns {string}
+     * @param {String} value 
+     * @returns {String}
      */
     _trim(value) {
         if (value === undefined) {

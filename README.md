@@ -15,11 +15,15 @@ Follow these [guidelines](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SD
 To do that, copy [ti-jsondb.js](ti-jsondb.js) to `lib/ti-jsondb.js`
 
 ```javascript
-// Use as node module
+// ES6+ (recommended)
 import TiJsonDB from '@caspahouzer/ti-jsondb';
-// OR use as **lib** module
+// ES5
 import TiJsonDB from 'ti-jsondb';
+```
 
+Now, create a new instance of _TiJsonDB_
+
+```javascript
 const jsonDatabase = new TiJsonDB({
     // Show debug information
     debug: true,
