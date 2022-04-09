@@ -5,3 +5,4 @@ mockup_data/
 .git
 Gruntfile.js
 .history/
+.vscode/

@@ -5,10 +5,10 @@
     "main": "ti-jsondb.js",
     "scripts": {
         "docs": "jsdoc2md --template methods.hbs ti-jsondb.js > methods.md",
-        "test": "grunt test",
-        "patch": "grunt test && npm version patch -m 'bump version'",
-        "minor": "grunt test && npm version minor -m 'bump version'",
-        "major": "grunt test && npm version major -m 'bump version'"
+        "test": "mocha --require esm",
+        "patch": "npm version patch -m 'bump version'",
+        "minor": "npm version minor -m 'bump version'",
+        "major": "npm version major -m 'bump version'"
     },
     "repository": {
         "type": "git",
@@ -34,12 +34,6 @@
     },
     "homepage": "https://github.com/caspahouzer/ti-jsondb#readme",
     "devDependencies": {
-        "fs-extended": "^0.2.1",
-        "grunt": "^1.4.1",
-        "grunt-mocha-test": "^0.13.3",
-        "jsdoc-to-markdown": "^7.1.1",
-        "mocha": "^9.2.2",
-        "should": "^13.2.3",
-        "underscore": "^1.13.2"
+        "jsdoc-to-markdown": "^7.1.1"
     }
 }
