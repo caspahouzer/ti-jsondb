@@ -14,10 +14,15 @@ Follow these [guidelines](https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SD
 
 To do that, copy [ti-jsondb.js](ti-jsondb.js) to `lib/ti-jsondb.js`
 
+> &nbsp;
+ ❗️ Warning
+ If you want to use it in a classic project, what is **not** the state of art, copy [underscore.js](lib/underscore.js) to `lib/underscore.js`
+ &nbsp;
+
 ```javascript
-// ES6+ (recommended)
+// Node module
 import TiJsonDB from '@caspahouzer/ti-jsondb';
-// ES5
+// ES6+
 import TiJsonDB from 'ti-jsondb';
 ```
 

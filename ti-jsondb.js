@@ -1,17 +1,14 @@
-
-if (!Ti) {
-    const os = require('os'),
-        _ = require('underscore'),
-        path = require('path'),
-        fs = require('fs-extended');
-
-    console.log(os.tmpdir());
+if (!_) {
+    try {
+        var _ = require('lib/underscore')._;
+    } catch (e) {
+        throw new error
+    }
 }
-
 /**
 * JSON Database functions overview
 * 
-* @module TiJsonDB
+* @module TiJsonDB 
 */
 export default class TiJsonDB {
 
@@ -43,26 +40,6 @@ export default class TiJsonDB {
 
         this._reloadAllTables;
         return this;
-    }
-
-    _directoryObject() {
-        // Ti 
-        if (Ti) {
-            const dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
-            if (!dbFolderObject.exists()) {
-                if (!dbFolderObject.createDirectory(true)) {
-                    throw new Error('ti-jsondb - Could not create directory tijsondb');
-                }
-            }
-            return dbFolderObject;
-        }
-
-        // Node
-        if (!fs.existsSync(this.dbPath)) {
-            if (!fs.mkdirSync(this.dbPath)) {
-                throw new Error('ti-jsondb - Could not create directory tijsondb with fs');
-            }
-        }
     }
 
     /**
@@ -195,9 +172,9 @@ export default class TiJsonDB {
             throw new Error('ti-jsondb - join: No table selected');
         }
 
-        this.query.conditions.join = this.query.conditions.join || [];
+        this.query.join = this.query.join || [];
 
-        this.query.conditions.join.push({
+        this.query.join.push({
             table: table,
             joinField: joinField,
             operator: operator,
@@ -747,19 +724,23 @@ export default class TiJsonDB {
      * Helper functions
      */
 
+    _directoryObject() {
+        const dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
+        if (!dbFolderObject.exists()) {
+            if (!dbFolderObject.createDirectory(true)) {
+                throw new Error('ti-jsondb - Could not create directory tijsondb');
+            }
+        }
+        return dbFolderObject;
+    }
+
     /**
      * Returns tmp directory
      * 
      * @returns {String}
      */
     _dbPath() {
-        if (Ti) {
-            console.log('use Ti');
-            return Ti.Filesystem.applicationDataDirectory + 'tijsondb/';
-        } else {
-            console.log('use node');
-            return os.tmpdir() + 'tijsondb/';
-        }
+        return Ti.Filesystem.applicationDataDirectory + 'tijsondb/';
     }
 
     /**
