@@ -2,7 +2,7 @@ if (!_) {
     try {
         var _ = require('lib/underscore')._;
     } catch (e) {
-        throw new error
+        throw new Error('underscore.js not found. Please copy it to the lib/ directory.');
     }
 }
 /**
