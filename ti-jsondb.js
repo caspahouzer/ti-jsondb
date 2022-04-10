@@ -1,10 +1,3 @@
-if (!_) {
-    try {
-        var _ = require('lib/underscore')._;
-    } catch (e) {
-        throw new Error('underscore.js not found. Please copy it to the lib/ directory.');
-    }
-}
 /**
 * JSON Database functions overview
 * 
@@ -396,9 +389,13 @@ export default class TiJsonDB {
         // Get all entries from conditions
         this.get();
 
+        const jsonDatabase = new TiJsonDB();
+        const allEntries = jsonDatabase.table(this.query.table).get();
+
         let updateCounter = 0;
 
         if (this.entries) {
+            // update this.entries
             _.each(this.entries, (entry, i) => {
                 for (const [key, value] of Object.entries(entry)) {
                     if (tableData[key] !== undefined) {
@@ -408,6 +405,18 @@ export default class TiJsonDB {
                 this.entries[i] = entry;
                 updateCounter++;
             });
+
+            // merge with allEntries
+            _.each(allEntries, (entry, i) => {
+                _.each(this.entries, (entry2, i2) => {
+                    if (entry.id === entry2.id) {
+                        allEntries[i] = entry2;
+                    }
+                });
+            });
+
+            this.entries = allEntries;
+
             if (this.debug) {
                 const endTime = new Date().getTime() - this.startTime;
                 console.log('DEBUG ti-jsondb - Updated ' + updateCounter + ' entrie(s) in ' + endTime + 'ms');
@@ -476,6 +485,10 @@ export default class TiJsonDB {
 
                 if (tableData[i].id) {
                     if (_.findWhere(this.entries, {id: tableData[i].id})) {
+                        if (onError instanceof Function) {
+                            onError({table: this.query.table, error: 'Insert: ID "' + tableData[i].id + '" already exists'});
+                            return;
+                        }
                         throw new Error('ti-jsondb - Insert: ID "' + tableData[i].id + '" already exists');
                     }
                 }
@@ -488,6 +501,10 @@ export default class TiJsonDB {
         } else {
             if (tableData.id) {
                 if (_.findWhere(this.entries, {id: tableData.id})) {
+                    if (onError instanceof Function) {
+                        onError({table: this.query.table, error: 'Insert: ID "' + tableData.id + '" already exists'});
+                        return;
+                    }
                     throw new Error('ti-jsondb - Insert: ID "' + tableData.id + '" already exists');
                 }
             }
@@ -514,7 +531,7 @@ export default class TiJsonDB {
             return this.entries.length;
         }
         if (onError instanceof Function) {
-            onError({error: 'Could not write objects to table "' + this.query.table + '"'});
+            onError({table: this.query.table, error: 'Could not write objects to table "' + this.query.table + '"'});
             return;
         }
         throw new Error('ti-jsondb - Insert: Could not write object to table "' + this.query.table + '"');
@@ -615,7 +632,7 @@ export default class TiJsonDB {
             }
 
             if (onError instanceof Function) {
-                onError({message: 'Table "' + this.query.table + '" does not exist'});
+                onError({table: this.query.table, message: 'Table "' + this.query.table + '" does not exist'});
                 return;
             }
 
@@ -646,7 +663,28 @@ export default class TiJsonDB {
      * @returns {Object}
      */
     find(id) {
-        return this.getById(id);
+        return this.getSingle('id', id);
+    }
+
+    /**
+     * Get last entry
+     * 
+     * @param {Function} onSuccess
+     * @param {Function} onError
+     * @returns {Object}
+     */
+    last(onSuccess = null, onError = null) {
+        if (!this.query.table) {
+            throw new Error('ti-jsondb - Last: No table selected');
+        }
+
+        if (this.allTables[this.query.table]) {
+            const entries = this._getAll();
+            if (entries.length > 0) {
+                return entries.pop();
+            }
+        }
+        return null;
     }
 
     /**
@@ -669,23 +707,23 @@ export default class TiJsonDB {
             throw new Error('ti-jsondb - getSingle: No value provided');
         }
 
-        // if entries not set, fetch them
-        if (!this.entries) {
-            this.get();
+        if (this.debug) {
+            console.log('DEBUG ti-jsondb - GetSingle "' + this.query.table + '" by "' + field + '" = "' + value + '"');
         }
+
+
+        // if entries not set, fetch them
+        this.get();
 
         // find entry
-        let entry = _.find(this.entries, (entry) => {
-            return entry[field] === value;
+        let entry = _.find(this.entries, entry => {
+            return entry[field] == value;
         });
 
-        if (this.debug) {
-            console.log('DEBUG ti-jsondb - Fetch single from "' + field + '" by "' + value + '"');
-        }
 
         if (entry === undefined) {
             if (onError instanceof Function) {
-                onError({message: 'No entry found'});
+                onError({table: this.query.table, message: 'No entry found'});
             }
             return
         }
@@ -713,7 +751,10 @@ export default class TiJsonDB {
      * @returns {String}
      */
     get last_insert_id() {
-        const lastItem = this.lastItem();
+        var lastItem = null;
+        if (this.allTables[this.query.table]) {
+            lastItem = this._getAll('id').pop();
+        }
         if (lastItem) {
             return lastItem.id;
         }
@@ -724,6 +765,23 @@ export default class TiJsonDB {
      * Helper functions
      */
 
+    /**
+     * Returns all entries of a table
+     * 
+     * @private
+     * @returns {Array}
+     */
+    _getAll(fields = '*') {
+        const jsonDatabase = new TiJsonDB();
+        return jsonDatabase.table(this.query.table).select(fields).get();
+    }
+
+    /**
+     * Returns directory object
+     * 
+     * @private
+     * @returns {Object}
+     */
     _directoryObject() {
         const dbFolderObject = Ti.Filesystem.getFile(this.dbPath);
         if (!dbFolderObject.exists()) {
@@ -737,6 +795,7 @@ export default class TiJsonDB {
     /**
      * Returns tmp directory
      * 
+     * @private
      * @returns {String}
      */
     _dbPath() {

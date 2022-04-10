@@ -16,6 +16,7 @@ To do that, copy [ti-jsondb.js](ti-jsondb.js) to `lib/ti-jsondb.js`
 
 > &nbsp;
  ❗️ Warning
+ ti-jsondb is made for [Alloy](https://titaniumsdk.com/guide/Alloy_Framework/) and uses [underscore.js](http://underscorejs.org).
  If you want to use it in a classic project, what is **not** the state of art, copy [underscore.js](lib/underscore.js) to `lib/underscore.js`
  &nbsp;
 
