@@ -10,7 +10,6 @@ JSON Database functions overview
         * [.select(fields)](#module_TiJsonDB--table+select) ⇒ <code>TiJsonDb</code>
         * [.where(field, operator, value)](#module_TiJsonDB--table+where) ⇒ <code>TiJsonDb</code>
         * [.orWhere(field, operator, value)](#module_TiJsonDB--table+orWhere) ⇒ <code>TiJsonDb</code>
-        * [.join(table, joinField, operator, onField)](#module_TiJsonDB--table+join) ⇒ <code>TiJsonDb</code>
         * [.orderBy(key, order)](#module_TiJsonDB--table+orderBy) ⇒ <code>TiJsonDb</code>
         * [.limit(limit, offset)](#module_TiJsonDB--table+limit) ⇒ <code>TiJsonDb</code>
         * [.destroy(onSuccess, onError)](#module_TiJsonDB--table+destroy) ⇒ <code>boolean</code>
@@ -81,20 +80,6 @@ Functionality is the same as where and can only be chained after where
 | field | <code>String</code> |  |  |
 | operator | <code>String</code> | <code>&#x3D;</code> | '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between' |
 | value | <code>Mixed</code> |  |  |
-
-<a name="module_TiJsonDB--table+join"></a>
-
-#### table.join(table, joinField, operator, onField) ⇒ <code>TiJsonDb</code>
-Simple join a table with another by field
-
-**Kind**: instance method of [<code>table</code>](#exp_module_TiJsonDB--table)  
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| table | <code>String</code> |  |  |
-| joinField | <code>String</code> |  |  |
-| operator | <code>String</code> | <code>&#x3D;</code> | '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between' |
-| onField | <code>String</code> |  |  |
 
 <a name="module_TiJsonDB--table+orderBy"></a>
 

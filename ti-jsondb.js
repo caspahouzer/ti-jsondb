@@ -1,10 +1,14 @@
-// if (typeof _ === 'undefined') {
-//     try {
-//         var _ = require('lib/underscore');
-//     } catch (e) {
-//         throw new Error('Could not load underscore');
-//     }
-// }
+try {
+    // Is Alloy
+    var _ = require('/alloy/underscore')._;
+} catch (e) {
+    // Is Classic
+    try {
+        var _ = require('lib/underscore')._;
+    } catch (e) {
+        throw new Error('Could not load underscore. Copy underscore.js from https://github.com/caspahouzer/ti-jsondb/lib/underscore.js to Resources/lib/underscore.js');
+    }
+}
 
 /**
 * JSON Database functions overview
@@ -154,32 +158,6 @@ export default class TiJsonDB {
             field: field,
             operator: operator,
             value: value
-        });
-
-        return this;
-    }
-
-    /**
-     * Simple join a table with another by field
-     * 
-     * @param {String} table 
-     * @param {String} joinField 
-     * @param {String} operator '=', '!=', '>', '<', '>=', '<=', '<>', 'like', 'not like', 'in', 'not in', 'between'
-     * @param {String} onField 
-     * @returns {TiJsonDb}
-     */
-    join(table, joinField, operator = '=', onField) {
-        if (!this.query.table) {
-            throw new Error('ti-jsondb - join: No table selected');
-        }
-
-        this.query.join = this.query.join || [];
-
-        this.query.join.push({
-            table: table,
-            joinField: joinField,
-            operator: operator,
-            onField: onField
         });
 
         return this;
