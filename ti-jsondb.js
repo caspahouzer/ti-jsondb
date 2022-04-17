@@ -1,10 +1,10 @@
-if (typeof _ === 'undefined') {
-    try {
-        var _ = require('lib/underscore');
-    } catch (e) {
-        throw new Error('Could not load underscore');
-    }
-}
+// if (typeof _ === 'undefined') {
+//     try {
+//         var _ = require('lib/underscore');
+//     } catch (e) {
+//         throw new Error('Could not load underscore');
+//     }
+// }
 
 /**
 * JSON Database functions overview

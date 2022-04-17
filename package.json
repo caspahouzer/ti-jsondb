@@ -5,7 +5,6 @@
     "main": "ti-jsondb.js",
     "scripts": {
         "docs": "jsdoc2md --template methods.hbs ti-jsondb.js > methods.md",
-        "test": "mocha --require esm",
         "patch": "npm version patch -m 'bump version'",
         "minor": "npm version minor -m 'bump version'",
         "major": "npm version major -m 'bump version'"

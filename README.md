@@ -21,10 +21,18 @@ To do that, copy [ti-jsondb.js](ti-jsondb.js) to `lib/ti-jsondb.js`
  &nbsp;
 
 ```javascript
+
 // Node module
 import TiJsonDB from '@caspahouzer/ti-jsondb';
-// ES6+
+
+// Alloy & ES6+
 import TiJsonDB from 'ti-jsondb';
+
+// Alloy & ES5
+const TiJsonDB = require('ti-jsondb');
+
+// Classic & ES6+
+import TiJsonDB from 'lib/ti-jsondb';
 ```
 
 Now, create a new instance of _TiJsonDB_
