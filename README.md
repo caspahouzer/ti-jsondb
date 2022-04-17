@@ -16,14 +16,23 @@ To do that, copy [ti-jsondb.js](ti-jsondb.js) to `lib/ti-jsondb.js`
 
 > &nbsp;
  ❗️ Warning
+ ti-jsondb is made for [Alloy](https://titaniumsdk.com/guide/Alloy_Framework/) and uses [underscore.js](http://underscorejs.org).
  If you want to use it in a classic project, what is **not** the state of art, copy [underscore.js](lib/underscore.js) to `lib/underscore.js`
  &nbsp;
 
 ```javascript
+
 // Node module
 import TiJsonDB from '@caspahouzer/ti-jsondb';
-// ES6+
+
+// Alloy & ES6+
 import TiJsonDB from 'ti-jsondb';
+
+// Alloy & ES5
+const TiJsonDB = require('ti-jsondb');
+
+// Classic & ES6+
+import TiJsonDB from 'lib/ti-jsondb';
 ```
 
 Now, create a new instance of _TiJsonDB_

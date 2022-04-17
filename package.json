@@ -1,11 +1,10 @@
 {
     "name": "@caspahouzer/ti-jsondb",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "description": "A file based JSON database for TiDev Titanium",
     "main": "ti-jsondb.js",
     "scripts": {
         "docs": "jsdoc2md --template methods.hbs ti-jsondb.js > methods.md",
-        "test": "mocha --require esm",
         "patch": "npm version patch -m 'bump version'",
         "minor": "npm version minor -m 'bump version'",
         "major": "npm version major -m 'bump version'"
